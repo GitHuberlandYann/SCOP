@@ -15,4 +15,10 @@ class InvalidVertexException : public std::exception
 		const char *what() const throw();
 };
 
+class InvalidFaceException : public std::exception
+{
+	public:
+		const char *what() const throw();
+};
+
 #endif
