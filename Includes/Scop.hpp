@@ -6,8 +6,9 @@
 class Scop {
 	private:
 		std::vector<t_vertex> _vertices;
-
-		void add_vertex( std::string line );
+		std::vector<t_vertex> _vertices_textures;
+		std::vector<t_vertex> _vertices_normals;
+		std::vector<Face *> _faces;
 
 	public:
 		Scop( void );

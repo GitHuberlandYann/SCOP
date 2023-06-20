@@ -7,5 +7,5 @@ const char* InvalidFileException::what() const throw()
 
 const char* InvalidVertexException::what() const throw()
 {
-	return ("[InvalidVertexException] Line starting with 'v ' is invalid.");
+	return ("[InvalidVertexException] Vertex line (v, vt, vn) is invalid.");
 }

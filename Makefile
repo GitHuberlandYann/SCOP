@@ -2,7 +2,7 @@ NAME = scop
 OBJS_DIR = Objs
 SRCS_DIR = Sources
 
-FILES = main parsing Exception Scop
+FILES = main parsing utils Exception Face Scop
 
 SRCS = $(addprefix $(SRCS_DIR)/, $(addsuffix .cpp, $(FILES)))
 
