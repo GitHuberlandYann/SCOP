@@ -3,6 +3,7 @@
 
 # include "scop.h"
 class Face;
+class Material;
 
 enum {
 	UNSET,
@@ -14,20 +15,23 @@ enum {
 
 class Scop {
 	private:
+		std::string _root;
 		int _face_mode;
 		std::vector<t_vertex> _vertices;
 		std::vector<t_vertex> _vertices_textures;
 		std::vector<t_vertex> _vertices_normals;
 		std::vector<Face *> _faces;
+		std::vector<Material *> _materials;
 
 		void get_face( std::string line );
 		void add_vertex_face( Face *face, std::string line, size_t & index );
 		t_vertex *get_vertex( int num );
 		t_vertex *get_texture( int num );
 		t_vertex *get_normal( int num );
+		void add_materials( std::string file );
 
 	public:
-		Scop( void );
+		Scop( std::string root );
 		~Scop( void );
 
 		void parse( std::string file );

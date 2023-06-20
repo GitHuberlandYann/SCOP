@@ -1,6 +1,6 @@
 #include "scop.h"
 
-Scop::Scop( void ) : _face_mode(UNSET)
+Scop::Scop( std::string root ) : _root(root), _face_mode(UNSET)
 {
 	std::cout << "Constructor of Scop called" << std::endl;
 }
@@ -20,6 +20,14 @@ Scop::~Scop( void )
 		delete *it;
 	}
 	_faces.clear();
+
+	std::vector<Material *>::iterator mit = _materials.begin();
+	std::vector<Material *>::iterator mite = _materials.end();
+	
+	for (; mit != mite; mit++) {
+		delete *mit;
+	}
+	_materials.clear();
 }
 
 void Scop::display_content( void )
@@ -29,5 +37,6 @@ void Scop::display_content( void )
 	std::cout << "\t-Number of vertices_textures: " << _vertices_textures.size() << std::endl;
 	std::cout << "\t-Number of vertices_normals: " << _vertices_normals.size() << std::endl;
 	std::cout << "\t-Number of faces: " << _faces.size() << std::endl;
+	std::cout << "\t-Number of materials: " << _materials.size() << std::endl;
 	std::cout << std::endl << " ----------------------" << std::endl << std::endl;
 }

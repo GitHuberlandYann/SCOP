@@ -16,6 +16,7 @@ typedef struct s_vertex {
 # include "Scop.hpp"
 # include "Exception.hpp"
 # include "Face.hpp"
+# include "Material.hpp"
 # include "utils.h"
 
 #endif

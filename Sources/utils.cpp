@@ -59,3 +59,30 @@ void display_special_characters(std::string str)
 	}
 	std::cout << "EOF" << std::endl;
 }
+
+/* extract 2 or 3 doubles from line starting at index then store them in t_vertex */
+t_vertex parse_vertex( std::string line, size_t index, bool texture )
+{
+	t_vertex new_vertex;
+	size_t tmp_index;
+
+	new_vertex.x = std::stod(line.substr(index), &tmp_index);
+	index += tmp_index;
+	if (line[index] != ' ') {
+		throw InvalidVertexException();
+	}
+	new_vertex.y = std::stod(line.substr(index + 1), &tmp_index);
+	index += tmp_index + 1;
+	if (texture) {
+		return (new_vertex);
+	}
+	if (line[index] != ' ') {
+		throw InvalidVertexException();
+	}
+	new_vertex.z = std::stod(line.substr(index + 1), &tmp_index);
+	index += tmp_index + 1;
+	if (index != line.size()) {
+		throw InvalidVertexException();
+	}
+	return (new_vertex);
+}

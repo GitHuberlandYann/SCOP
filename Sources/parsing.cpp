@@ -1,32 +1,5 @@
 #include "scop.h"
 
-/* check if line starting with "vnt " is correct */
-static t_vertex parse_vertex( std::string line, size_t index, bool texture )
-{
-	t_vertex new_vertex;
-	size_t tmp_index;
-
-	new_vertex.x = std::stod(line.substr(index), &tmp_index);
-	index += tmp_index;
-	if (line[index] != ' ') {
-		throw InvalidVertexException();
-	}
-	new_vertex.y = std::stod(line.substr(index + 1), &tmp_index);
-	index += tmp_index + 1;
-	if (texture) {
-		return (new_vertex);
-	}
-	if (line[index] != ' ') {
-		throw InvalidVertexException();
-	}
-	new_vertex.z = std::stod(line.substr(index + 1), &tmp_index);
-	index += tmp_index + 1;
-	if (index != line.size()) {
-		throw InvalidVertexException();
-	}
-	return (new_vertex);
-}
-
 t_vertex *Scop::get_vertex( int num )
 {
 	if (num == 0) {
@@ -170,6 +143,38 @@ void Scop::get_face( std::string line )
 	}
 }
 
+/* read .mtl file and store its info if correct */
+void Scop::add_materials( std::string file )
+{
+	if (!_materials.empty()) {
+		throw DoubleMltlibException();
+	} else if (file.empty()) {
+		throw NoMltlibFileException();
+	} else if (file.size() < 4 || file.compare(file.size() - 4, 4, ".mtl")) {
+		throw MltExtensionException();
+	}
+
+	file = _root + file;
+	std::ifstream indata(file.c_str());
+	if (!indata.is_open()) {
+		throw InvalidMltFileException();
+	}
+	std::string line;
+	while (!indata.eof()) {
+		if (line.compare(0, 7, "newmtl ")) {
+			std::getline(indata, line);
+			line = trim_spaces(line);
+		}
+		// display_special_characters(line);
+		if (line.empty() || line[0] == '#') {
+			continue ;
+		} else if (!line.compare(0, 7, "newmtl ")) {
+			_materials.push_back(new Material(_root + line.substr(7), indata));
+		}
+	}
+	indata.close();
+}
+
 /* read .obj file provided and store its informations if they are correct */
 void Scop::parse( std::string file )
 {
@@ -192,6 +197,8 @@ void Scop::parse( std::string file )
 			_vertices_normals.push_back(parse_vertex(line, 3, false));
 		} else if (!line.compare(0, 2, "f ")) {
 			get_face(line);
+		} else if (!line.compare(0, 7, "mtllib ")) {
+			add_materials(line.substr(7));
 		}
 	}
 	indata.close();

@@ -15,13 +15,21 @@ static std::string get_file( int ac, char **av )
 	return ("");
 }
 
+static std::string get_root( std::string file )
+{
+	size_t index = file.rfind('/');
+	if (index == std::string::npos)
+		return ("");
+	return (file.substr(0, index + 1));
+}
+
 int main( int ac, char **av )
 {
 	std::string file = get_file(ac, av);
 	if (file.empty())
 		return (1);
 
-	Scop *scop = new Scop();
+	Scop *scop = new Scop(get_root(file));
 	try {
 		scop->parse(file);
 		scop->display_content();
