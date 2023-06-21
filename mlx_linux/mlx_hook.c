@@ -15,7 +15,7 @@
 
 
 int	mlx_hook(t_win_list *win, int x_event, int x_mask, 
-		 int (*funct)(),void *param)
+		 int (*funct)(int,void*),void *param)
 {
   win->hooks[x_event].hook = funct;
   win->hooks[x_event].param = param;
