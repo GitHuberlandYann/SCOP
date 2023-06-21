@@ -31,6 +31,7 @@ class Scop {
 		t_vertex *get_texture( int num );
 		t_vertex *get_normal( int num );
 		void add_materials( std::string file );
+		void set_material( std::string name );
 
 	public:
 		Scop( std::string root );

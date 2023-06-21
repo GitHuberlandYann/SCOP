@@ -1,20 +1,19 @@
 #include "scop.h"
 
-Material::Material( std::string name, std::ifstream & indata ) : _name(name), _color(0xffffff)
+Material::Material( std::string name, std::ifstream & indata, std::string & line ) : _name(name), _color(0xffffff)
 {
 	// std::cout << "Constructor of Material called" << std::endl;
 	if (name.empty()) {
 		throw InvalidMltException();
 	}
 
-	std::string line;
 	while (!indata.eof()) {
 		std::getline(indata, line);
 		line = trim_spaces(line);
 		// display_special_characters(line);
 		if (line.empty() || line[0] == '#') {
 			continue ;
-		} else if (!line.compare(0, 3, "kd ")) {
+		} else if (!line.compare(0, 3, "Kd ")) {
 			set_rgb(line);
 		} else if (!line.compare(0, 7, "map_kd ")) {
 			continue ; //TODO add texture_img to scop and remember index here
@@ -44,6 +43,8 @@ void Material::set_rgb( std::string line )
 	_color = (int)(rgb_01.x * 255) * 0x10000;
 	_color += (int)(rgb_01.y * 255) * 0x100;
 	_color += (int)(rgb_01.z * 255);
+
+	// std::cout << "rgb of material set to: " << _color << std::endl;
 }
 
 // ************************************************************************** //
@@ -53,4 +54,9 @@ void Material::set_rgb( std::string line )
 unsigned int Material::get_color( void )
 {
 	return (_color);
+}
+
+std::string Material::get_name( void )
+{
+	return (_name);
 }

@@ -1,7 +1,10 @@
 #include "scop.h"
 
-Mlx::Mlx( Scop *scop ) : _angles{0, M_PI, 0}, _cos{1, -1, 1}, _sin{0, 0, 0}, _size(5),
-		_offset_x(WIN_SIZE_X / 2), _offset_y(WIN_SIZE_Y / 2), _color_mode(DEFAULT), _fill(false)
+Mlx::Mlx( Scop *scop ) : _angles{0, M_PI, 0}, _cos{1, -1, 1}, _sin{0, 0, 0},
+		_key_rot_x(0), _key_rot_y(0), _key_rot_z(0), _key_horizontal(0), _key_vertical(0),
+		_key_zoom(0), _key_color(0), _key_fill(0), _key_normal(0), _scop(scop), _size(5),
+		_offset_x(WIN_SIZE_X / 2), _offset_y(WIN_SIZE_Y / 2), _color_mode(DEFAULT),
+		_fill(false), _use_normal(false)
 {
 	std::cout << "Constructor of Mlx called" << std::endl;
 	_mlx_ptr = mlx_init();
@@ -23,20 +26,35 @@ Mlx::Mlx( Scop *scop ) : _angles{0, M_PI, 0}, _cos{1, -1, 1}, _sin{0, 0, 0}, _si
 
 	scop->map_img(this);
 	mlx_put_image_to_window(_mlx_ptr, _win_ptr, _img_ptr, 0, 0);
-	// mlx_hook(_win_ptr, ON_KEYDOWN, 1 << 0, key_down, scop);
-	// mlx_hook(_win_ptr, ON_KEYUP, 1l << 1, key_released, scop);
-	// mlx_hook(_win_ptr, ON_DESTROY, 0, mlx_exit, NULL);
-	// mlx_loop_hook(_mlx_ptr, mlx_draw, scop);
+	mlx_hook(_win_ptr, ON_KEYDOWN, 1 << 0, event_key_down, this);
+	mlx_hook(_win_ptr, ON_KEYUP, 1l << 1, event_key_released, this);
+	mlx_hook(_win_ptr, ON_DESTROY, 0, mlx_exit, NULL);
+	Mlx *test = this;
+	mlx_loop_hook(_mlx_ptr, event_mlx_draw, test);
 	mlx_loop(_mlx_ptr);
 }
 
 Mlx::~Mlx( void )
 {
 	std::cout << "Destructor of Mlx called" << std::endl;
+	// if (_mlx_ptr) {
+	// 	free(_mlx_ptr);
+	// }
+	// if (_win_ptr) {
+	// 	free(_win_ptr);
+	// }
+	// if (_img_ptr) {
+	// 	free(_img_ptr);
+	// }
+// 	int	mlx_destroy_window(void *mlx_ptr, void *win_ptr);
+
+// int	mlx_destroy_image(void *mlx_ptr, void *img_ptr);
+
+// int	mlx_destroy_display(void *mlx_ptr);
 }
 
 // ************************************************************************** //
-//                                  Public                                    //
+//                                  Private                                   //
 // ************************************************************************** //
 
 void Mlx::clear_img( void )
@@ -47,6 +65,10 @@ void Mlx::clear_img( void )
 		}
 	}
 }
+
+// ************************************************************************** //
+//                                  Public                                    //
+// ************************************************************************** //
 
 void Mlx::put_pixel( int x, int y, unsigned int color )
 {
@@ -77,4 +99,83 @@ double Mlx::rotation_y( t_vertex vertex )
 	res += (_sin.x * _sin.y * _sin.z + _cos.x * _cos.z) * vertex.y;
 	res += (_cos.x * _sin.y * _sin.z - _sin.x * _cos.z) * vertex.z;
 	return (res);
+}
+
+void Mlx::key_down( int kcode )
+{
+	// std::cout << "kcode: " << kcode << std::endl;
+	if (kcode == KEY_E || kcode == KEY_R)
+		_key_rot_z = (kcode == KEY_E) - (kcode == KEY_R);
+	else if (kcode == KEY_W || kcode == KEY_S)
+		_key_rot_y = (kcode == KEY_W) - (kcode == KEY_S);
+	else if (kcode == KEY_A || kcode == KEY_D)
+		_key_rot_x = (kcode == KEY_A) - (kcode == KEY_D);
+	else if (kcode == KEY_LEFT || kcode == KEY_RIGHT)
+		_key_horizontal = (kcode == KEY_RIGHT) - (kcode == KEY_LEFT);
+	else if (kcode == KEY_UP || kcode == KEY_DOWN)
+		_key_vertical = (kcode == KEY_DOWN) - (kcode == KEY_UP);
+	else if (kcode == KEY_PLUS || kcode == KEY_MINUS)
+		_key_zoom = (kcode == KEY_PLUS) - (kcode == KEY_MINUS);
+	else if (kcode == KEY_C && ++_key_color == 1)
+	{
+		++_color_mode;
+		if (_color_mode == LAST) {
+			_color_mode = DEFAULT;
+		}
+	}
+	else if (kcode == KEY_F && ++_key_fill == 1)
+		_fill = !_fill;
+	else if (kcode == KEY_V && ++_key_normal == 1)
+		_use_normal = !_use_normal;
+}
+
+void Mlx::key_released( int kcode )
+{
+	if (kcode == KEY_E || kcode == KEY_R)
+		_key_rot_z = 0;
+	else if (kcode == KEY_W || kcode == KEY_S)
+		_key_rot_y = 0;
+	else if (kcode == KEY_A || kcode == KEY_D)
+		_key_rot_x = 0;
+	else if (kcode == KEY_LEFT || kcode == KEY_RIGHT)
+		_key_horizontal = 0;
+	else if (kcode == KEY_UP || kcode == KEY_DOWN)
+		_key_vertical = 0;
+	else if (kcode == KEY_PLUS || kcode == KEY_MINUS)
+		_key_zoom = 0;
+	else if (kcode == KEY_C)
+		_key_color = 0;
+	else if (kcode == KEY_F)
+		_key_fill = 0;
+	else if (kcode == KEY_V)
+		_key_normal = 0;
+}
+
+void Mlx::draw( void )
+{
+	if (_key_rot_x)
+	{
+		_angles.x += 2 * (M_PI / 180) * _key_rot_x;
+		_sin.x = sin(_angles.x);
+		_cos.x = cos(_angles.x);
+	}
+	if (_key_rot_y)
+	{
+		_angles.y += 2 * (M_PI / 180) * _key_rot_y;
+		_sin.y = sin(_angles.y);
+		_cos.y = cos(_angles.y);
+	}
+	if (_key_rot_z)
+	{
+		_angles.z += 2 * (M_PI / 180) * _key_rot_z;
+		_sin.z = sin(_angles.z);
+		_cos.z = cos(_angles.z);
+	}
+	_offset_x += 10 * _key_horizontal;
+	_offset_y += 10 * _key_vertical;
+	_size += _key_zoom;
+
+	clear_img();
+	_scop->map_img(this);
+	mlx_put_image_to_window(_mlx_ptr, _win_ptr, _img_ptr, 0, 0);
 }

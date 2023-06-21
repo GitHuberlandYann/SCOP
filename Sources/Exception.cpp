@@ -40,6 +40,11 @@ const char* InvalidMltException::what() const throw()
 	return ("[InvalidMltException] Error in .mlt file.");
 }
 
+const char* NoMatchingMaterialException::what() const throw()
+{
+	return ("[NoMatchingMaterialException] No matching material in .mlt file.");
+}
+
 const char* InvalidRGBException::what() const throw()
 {
 	return ("[InvalidRGBException] RGB in .mlt must be in range [0:1].");
@@ -48,4 +53,9 @@ const char* InvalidRGBException::what() const throw()
 const char* MlxCallException::what() const throw()
 {
 	return ("[MlxCallException] Call to mlx function failed.");
+}
+
+const char* QuitProgramException::what() const throw()
+{
+	return ("[QuitProgramException] You successfully quit the program.");
 }

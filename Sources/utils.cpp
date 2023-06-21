@@ -86,3 +86,40 @@ t_vertex parse_vertex( std::string line, size_t index, bool texture )
 	}
 	return (new_vertex);
 }
+
+int mlx_exit( int ignore, void *ignore_too )
+{
+	(void)ignore;
+	(void)ignore_too;
+	throw QuitProgramException();
+	return (0);
+}
+
+int event_key_down( int kcode, void *param )
+{
+	Mlx *mlx;
+
+	mlx = static_cast<Mlx *>(param);
+	if (kcode == KEY_ESC)
+		mlx_exit(0, NULL);
+	mlx->key_down(kcode);
+	return (0);
+}
+
+int event_key_released( int kcode, void *param )
+{
+	Mlx *mlx;
+
+	mlx = static_cast<Mlx *>(param);
+	mlx->key_released(kcode);
+	return (0);
+}
+
+int	event_mlx_draw( void *param )
+{
+	Mlx *mlx;
+
+	mlx = static_cast<Mlx *>(param);
+	mlx->draw();
+	return (0);
+}

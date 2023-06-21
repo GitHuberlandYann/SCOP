@@ -169,10 +169,25 @@ void Scop::add_materials( std::string file )
 		if (line.empty() || line[0] == '#') {
 			continue ;
 		} else if (!line.compare(0, 7, "newmtl ")) {
-			_materials.push_back(new Material(_root + line.substr(7), indata));
+			_materials.push_back(new Material(line.substr(7), indata, line));
 		}
 	}
 	indata.close();
+}
+
+void Scop::set_material( std::string name )
+{
+	std::vector<Material *>::iterator it = _materials.begin();
+	std::vector<Material *>::iterator ite = _materials.end();
+
+	for (; it != ite; it++) {
+		if (!name.compare(0, name.size(), (*it)->get_name())) {
+			_current_used_material = *it;
+			return ;
+		}
+	}
+	std::cout << "Material: " << name << std::endl;
+	throw NoMatchingMaterialException();
 }
 
 /* read .obj file provided and store its informations if they are correct */
@@ -198,7 +213,7 @@ void Scop::parse( std::string file )
 		} else if (!line.compare(0, 2, "f ")) {
 			get_face(line);
 		} else if (!line.compare(0, 7, "usemtl ")) {
-
+			set_material(line.substr(7));
 		} else if (!line.compare(0, 7, "mtllib ")) {
 			add_materials(line.substr(7));
 		}

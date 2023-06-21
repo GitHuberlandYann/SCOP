@@ -51,6 +51,12 @@ class InvalidMltException : public std::exception
 		const char *what() const throw();
 };
 
+class NoMatchingMaterialException : public std::exception
+{
+	public:
+		const char *what() const throw();
+};
+
 class InvalidRGBException : public std::exception
 {
 	public:
@@ -58,6 +64,12 @@ class InvalidRGBException : public std::exception
 };
 
 class MlxCallException : public std::exception
+{
+	public:
+		const char *what() const throw();
+};
+
+class QuitProgramException : public std::exception
 {
 	public:
 		const char *what() const throw();

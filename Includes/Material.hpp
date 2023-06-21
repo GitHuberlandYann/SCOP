@@ -10,10 +10,11 @@ class Material {
 		void set_rgb( std::string line );
 
 	public:
-		Material( std::string name, std::ifstream & indata );
+		Material( std::string name, std::ifstream & indata, std::string & line );
 		~Material( void );
 
 		unsigned int get_color( void );
+		std::string get_name( void );
 
 };
 
