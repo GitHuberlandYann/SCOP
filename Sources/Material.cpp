@@ -1,6 +1,6 @@
 #include "scop.h"
 
-Material::Material( std::string name, std::ifstream & indata ) : _name(name), _color{255, 255, 255}
+Material::Material( std::string name, std::ifstream & indata ) : _name(name), _color(0xffffff)
 {
 	// std::cout << "Constructor of Material called" << std::endl;
 	if (name.empty()) {
@@ -41,7 +41,16 @@ void Material::set_rgb( std::string line )
 		|| rgb_01.z < 0 || rgb_01.z > 1) {
 		throw InvalidRGBException();
 	}
-	_color[0] = rgb_01.x * 255;
-	_color[1] = rgb_01.y * 255;
-	_color[2] = rgb_01.z * 255;
+	_color = (int)(rgb_01.x * 255) * 0x10000;
+	_color += (int)(rgb_01.y * 255) * 0x100;
+	_color += (int)(rgb_01.z * 255);
+}
+
+// ************************************************************************** //
+//                                  Public                                    //
+// ************************************************************************** //
+
+unsigned int Material::get_color( void )
+{
+	return (_color);
 }

@@ -4,6 +4,7 @@
 # include "scop.h"
 class Face;
 class Material;
+class Mlx;
 
 enum {
 	UNSET,
@@ -22,6 +23,7 @@ class Scop {
 		std::vector<t_vertex> _vertices_normals;
 		std::vector<Face *> _faces;
 		std::vector<Material *> _materials;
+		Material *_current_used_material;
 
 		void get_face( std::string line );
 		void add_vertex_face( Face *face, std::string line, size_t & index );
@@ -36,6 +38,7 @@ class Scop {
 
 		void parse( std::string file );
 		void display_content( void );
+		void map_img(Mlx *mlx);
 };
 
 

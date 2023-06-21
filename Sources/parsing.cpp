@@ -127,7 +127,7 @@ void Scop::add_vertex_face( Face *face, std::string line, size_t & index )
 /* check if face line is correct, return instance of class Face */
 void Scop::get_face( std::string line )
 {
-	Face *new_face = new Face();
+	Face *new_face = new Face(_current_used_material);
 	_faces.push_back(new_face);
 	size_t index = 2;
 
@@ -197,6 +197,8 @@ void Scop::parse( std::string file )
 			_vertices_normals.push_back(parse_vertex(line, 3, false));
 		} else if (!line.compare(0, 2, "f ")) {
 			get_face(line);
+		} else if (!line.compare(0, 7, "usemtl ")) {
+
 		} else if (!line.compare(0, 7, "mtllib ")) {
 			add_materials(line.substr(7));
 		}
