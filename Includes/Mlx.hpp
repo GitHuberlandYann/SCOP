@@ -150,21 +150,24 @@ class Mlx {
 		int _img_bits_per_pixel;
 		int _img_line_length;
 		int _img_endian;
-		int _key_rot_x, _key_rot_y, _key_rot_z, _key_horizontal, _key_vertical, _key_zoom, _key_color, _key_fill, _key_normal;
+		int _key_rot_x, _key_rot_y, _key_rot_z, _key_horizontal, _key_vertical, _key_zoom, _key_color, _key_fill, _key_normal, _key_show_normals;
 		Scop *_scop;
 
 		void clear_img( void );
+		// void set_dir( void );
 
 	public:
 		Mlx( Scop *scop );
 		~Mlx( void );
 
 		int _size, _offset_x, _offset_y, _color_mode;
-		bool _fill, _use_normal;
+		bool _fill, _use_normal, _show_normals;
+		t_vertex _dir;
 
 		void put_pixel( int x, int y, unsigned int color );
 		double rotation_x( t_vertex vertex );
 		double rotation_y( t_vertex vertex );
+		double rotation_z( t_vertex vertex );
 		void key_down( int kcode );
 		void key_released( int kcode );
 		void draw( void );

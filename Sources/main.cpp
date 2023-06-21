@@ -37,7 +37,7 @@ int main( int ac, char **av )
 	} catch (std::exception & e) {
 		std::cout << e.what() << std::endl;
 		delete scop;
-		return (1);
+		exit(1); //remove this to see leaks when quit
 	}
 	delete scop;
 	return (0);

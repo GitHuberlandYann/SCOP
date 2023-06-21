@@ -2,9 +2,10 @@
 
 Mlx::Mlx( Scop *scop ) : _angles{0, M_PI, 0}, _cos{1, -1, 1}, _sin{0, 0, 0},
 		_key_rot_x(0), _key_rot_y(0), _key_rot_z(0), _key_horizontal(0), _key_vertical(0),
-		_key_zoom(0), _key_color(0), _key_fill(0), _key_normal(0), _scop(scop), _size(5),
-		_offset_x(WIN_SIZE_X / 2), _offset_y(WIN_SIZE_Y / 2), _color_mode(DEFAULT),
-		_fill(false), _use_normal(false)
+		_key_zoom(0), _key_color(0), _key_fill(0), _key_normal(0), _key_show_normals(0),
+		_scop(scop), _size(5), _offset_x(WIN_SIZE_X / 2), _offset_y(WIN_SIZE_Y / 2),
+		_color_mode(DEFAULT), _fill(false), _use_normal(false), _show_normals(false),
+		_dir{0, 0, -1}
 {
 	std::cout << "Constructor of Mlx called" << std::endl;
 	_mlx_ptr = mlx_init();
@@ -66,6 +67,18 @@ void Mlx::clear_img( void )
 	}
 }
 
+// void Mlx::set_dir( void )
+// {
+// 	_dir.x = -(_cos.x * _sin.y * _cos.z + _sin.x * _sin.z);
+// 	_dir.y = -(_cos.x * _sin.y * _sin.z - _sin.x * _cos.z);
+// 	_dir.z = -(_cos.x * _cos.y);
+
+// 	// std::cout << "alpha: " << _angles.x / M_PI * 180 << std::endl;
+// 	// std::cout << "beta: " << _angles.y / M_PI * 180 << std::endl;
+// 	// std::cout << "gamma: " << _angles.z / M_PI * 180 << std::endl;
+// 	// std::cout << "dir: " << _dir.x << ", " << _dir.y << ", " << _dir.z << std::endl;
+// }
+
 // ************************************************************************** //
 //                                  Public                                    //
 // ************************************************************************** //
@@ -101,6 +114,16 @@ double Mlx::rotation_y( t_vertex vertex )
 	return (res);
 }
 
+double Mlx::rotation_z( t_vertex vertex )
+{
+	double res;
+	
+	res = -_sin.y * vertex.x;
+	res += _sin.x * _cos.y * vertex.y;
+	res += _cos.x * _cos.y * vertex.z;
+	return (res);
+}
+
 void Mlx::key_down( int kcode )
 {
 	// std::cout << "kcode: " << kcode << std::endl;
@@ -127,6 +150,8 @@ void Mlx::key_down( int kcode )
 		_fill = !_fill;
 	else if (kcode == KEY_V && ++_key_normal == 1)
 		_use_normal = !_use_normal;
+	else if (kcode == KEY_N && ++_key_show_normals == 1)
+		_show_normals = !_show_normals;
 }
 
 void Mlx::key_released( int kcode )
@@ -149,6 +174,8 @@ void Mlx::key_released( int kcode )
 		_key_fill = 0;
 	else if (kcode == KEY_V)
 		_key_normal = 0;
+	else if (kcode == KEY_N)
+		_key_show_normals = 0;
 }
 
 void Mlx::draw( void )
@@ -177,5 +204,6 @@ void Mlx::draw( void )
 
 	clear_img();
 	_scop->map_img(this);
+	put_pixel(WIN_SIZE_X / 2, WIN_SIZE_Y /2, 0xff0000);
 	mlx_put_image_to_window(_mlx_ptr, _win_ptr, _img_ptr, 0, 0);
 }

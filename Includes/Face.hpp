@@ -14,8 +14,12 @@ class Face {
 		std::vector<t_vertex> _vertices_normals;
 		unsigned int _color;
 
-		void draw_line( Mlx *mlx, t_vertex & s, t_vertex & e );
+		void fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c );
+		void fill_faces( Mlx *mlx );
+		void draw_line( Mlx *mlx, t_vertex & a, t_vertex & b );
 		void link_vertices( Mlx *mlx, int a, int b );
+		// void display_dir( Mlx *mlx );
+		void link_normal( Mlx *mlx, int index );
 
 	public:
 		Face( Material *mat );
