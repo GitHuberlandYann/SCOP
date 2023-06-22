@@ -4,25 +4,20 @@ Spatial Computing and Object Pendering
 Project done during my formation at 19. https://campus19.be/
 
 ## Controls (Qwerty)
-WSADER		- turn object around
+```
+WSADER		  - turn object around
+arrows	  	- move object around
++-			    - size object
 
-arrows		- move object around
+C			      - switch color mode (DEFAULT-MATERIAL-TEXTURE)
+V			      - Hide/Show faces with normals facing away from viewpoint
+F			      - Fill faces with color
+N			      - Display vertices' normal vector
 
-+-			- size object
-
-C			- switch color mode (DEFAULT-MATERIAL-TEXTURE)
-
-V			- Hide/Show faces with normals facing away from viewpoint
-
-F			- Fill faces with color
-
-N			- Display vertices' normal vector
-
-\* (pad)	- Enable/Disable plane {0, 0, z} cutting object
-
-+- (pad)	- change z coordinate of plane from point above
-
+\* (pad)	  - Enable/Disable plane {0, 0, z} cutting object
++- (pad)	  - change z coordinate of plane from point above
 enter (pad)	- switch side of plane to hide
+```
 
 ## Run
 After cloning the project, cd into repo and run:
