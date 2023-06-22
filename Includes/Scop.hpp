@@ -44,6 +44,7 @@ class Scop {
 		void parse( std::string file );
 		void display_content( void );
 		void center_object( void );
+		double get_extramum( void );
 		void map_img( Mlx *mlx );
 };
 

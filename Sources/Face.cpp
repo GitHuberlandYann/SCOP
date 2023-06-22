@@ -73,26 +73,34 @@ void Face::fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c, bool tex
 
 void Face::fill_faces( Mlx *mlx )
 {
+	double z0 = 0, z1 = 0, z2 = 0;
+
 	if (mlx->_plane_enable) {
-		double z = mlx->rotation_z(_vertices[0]);
-		if (z * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
+		z0 = mlx->rotation_z(_vertices[0]);
+		if (z0 * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
 			return ;
 		}
+	} else if (mlx->_perspective_enable) {
+		z0 =  mlx->rotation_z(_vertices[0]);
 	}
 	
 	t_vertex f0, f1, f2, t0, t1, t2;
 	bool texture = (mlx->_color_mode == TEXTURE && !_vertices_textures.empty() && _texture_index && *_texture_index != std::string::npos);
-	f0.x = mlx->rotation_x(_vertices[0]) * mlx->_size + mlx->_offset_x;
-	f0.y = mlx->rotation_y(_vertices[0]) * mlx->_size + mlx->_offset_y;
+	f0.x = mlx->rotation_x(_vertices[0]) * mlx->_size * mlx->add_perspective(z0) + mlx->_offset_x;
+	f0.y = mlx->rotation_y(_vertices[0]) * mlx->_size * mlx->add_perspective(z0) + mlx->_offset_y;
 
 	if (texture) {
 		t0 = mlx->set_textvert(_vertices_textures[0], *_texture_index);
 	}
 	for (int index = 1; index < _size - 1; ++index) {
-		f1.x = mlx->rotation_x(_vertices[index]) * mlx->_size + mlx->_offset_x;
-		f1.y = mlx->rotation_y(_vertices[index]) * mlx->_size + mlx->_offset_y;
-		f2.x = mlx->rotation_x(_vertices[index + 1]) * mlx->_size + mlx->_offset_x;
-		f2.y = mlx->rotation_y(_vertices[index + 1]) * mlx->_size + mlx->_offset_y;
+		if (mlx->_perspective_enable) {
+			z1 = mlx->rotation_z(_vertices[index]);
+			z2 = mlx->rotation_z(_vertices[index + 1]);
+		}
+		f1.x = mlx->rotation_x(_vertices[index]) * mlx->_size * mlx->add_perspective(z1) + mlx->_offset_x;
+		f1.y = mlx->rotation_y(_vertices[index]) * mlx->_size * mlx->add_perspective(z1) + mlx->_offset_y;
+		f2.x = mlx->rotation_x(_vertices[index + 1]) * mlx->_size * mlx->add_perspective(z2) + mlx->_offset_x;
+		f2.y = mlx->rotation_y(_vertices[index + 1]) * mlx->_size * mlx->add_perspective(z2) + mlx->_offset_y;
 		if (texture) {
 			t1 = mlx->set_textvert(_vertices_textures[index], *_texture_index);
 			t2 = mlx->set_textvert(_vertices_textures[index + 1], *_texture_index);
@@ -143,22 +151,27 @@ void Face::draw_line( Mlx *mlx, t_vertex & a, t_vertex & b, bool texture, t_vert
 
 void Face::link_vertices( Mlx *mlx, int a, int b )
 {
+	double za = 0, zb = 0;
+
 	if (mlx->_plane_enable) {
-		double z = mlx->rotation_z(_vertices[a]);
-		if (z * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
+		za = mlx->rotation_z(_vertices[a]);
+		if (za * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
 			return ;
 		}
-		z = mlx->rotation_z(_vertices[b]);
-		if (z * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
+		zb = mlx->rotation_z(_vertices[b]);
+		if (zb * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
 			return ;
 		}
+	} else if (mlx->_perspective_enable) {
+		za = mlx->rotation_z(_vertices[a]);
+		zb = mlx->rotation_z(_vertices[b]);
 	}
 
 	t_vertex s, e;
-	s.x = mlx->rotation_x(_vertices[a]) * mlx->_size + mlx->_offset_x;
-	s.y = mlx->rotation_y(_vertices[a]) * mlx->_size + mlx->_offset_y;
-	e.x = mlx->rotation_x(_vertices[b]) * mlx->_size + mlx->_offset_x;
-	e.y = mlx->rotation_y(_vertices[b]) * mlx->_size + mlx->_offset_y;
+	s.x = mlx->rotation_x(_vertices[a]) * mlx->_size * mlx->add_perspective(za) + mlx->_offset_x;
+	s.y = mlx->rotation_y(_vertices[a]) * mlx->_size * mlx->add_perspective(za) + mlx->_offset_y;
+	e.x = mlx->rotation_x(_vertices[b]) * mlx->_size * mlx->add_perspective(zb) + mlx->_offset_x;
+	e.y = mlx->rotation_y(_vertices[b]) * mlx->_size * mlx->add_perspective(zb) + mlx->_offset_y;
 	draw_line(mlx, s, e, false, s, e);
 }
 

@@ -46,16 +46,6 @@ void Scop::display_content( void )
 	std::cout << std::endl << " ----------------------" << std::endl << std::endl;
 }
 
-void Scop::map_img( Mlx *mlx )
-{
-	std::vector<Face *>::iterator it = _faces.begin();
-	std::vector<Face *>::iterator ite = _faces.end();
-
-	for (; it != ite; it++) {
-		(*it)->draw_face(mlx);
-	}
-}
-
 /* use minmax_box to center object on {0, 0, 0} */
 void Scop::center_object( void )
 {
@@ -63,14 +53,45 @@ void Scop::center_object( void )
 								(_max_box.y + _min_box.y) / 2,
 								(_max_box.z + _min_box.z) / 2};
 	
-	std::cout << "max: {" << _max_box.x << ", " << _max_box.y << ", " << _max_box.z << "}" << std::endl;
-	std::cout << "min: {" << _min_box.x << ", " << _min_box.y << ", " << _min_box.z << "}" << std::endl;
-	std::cout << "axis: {" << central_axis.x << ", " << central_axis.y << ", " << central_axis.z << "}" << std::endl;
+	// std::cout << "max: {" << _max_box.x << ", " << _max_box.y << ", " << _max_box.z << "}" << std::endl;
+	// std::cout << "min: {" << _min_box.x << ", " << _min_box.y << ", " << _min_box.z << "}" << std::endl;
+	// std::cout << "axis: {" << central_axis.x << ", " << central_axis.y << ", " << central_axis.z << "}" << std::endl;
 
 	std::vector<Face *>::iterator it = _faces.begin();
 	std::vector<Face *>::iterator ite = _faces.end();
 
 	for (; it != ite; it++) {
 		(*it)->center_object(central_axis);
+	}
+}
+
+double Scop::get_extramum( void )
+{
+	double res = fabs(_max_box.x);
+	if (fabs(_max_box.y) > res) {
+		res = fabs(_max_box.y);
+	}
+	if (fabs(_max_box.z) > res) {
+		res = fabs(_max_box.z);
+	}
+	if (fabs(_min_box.x) > res) {
+		res = fabs(_min_box.x);
+	}
+	if (fabs(_min_box.y) > res) {
+		res = fabs(_min_box.y);
+	}
+	if (fabs(_min_box.z) > res) {
+		res = fabs(_min_box.z);
+	}
+	return (res);
+}
+
+void Scop::map_img( Mlx *mlx )
+{
+	std::vector<Face *>::iterator it = _faces.begin();
+	std::vector<Face *>::iterator ite = _faces.end();
+
+	for (; it != ite; it++) {
+		(*it)->draw_face(mlx);
 	}
 }

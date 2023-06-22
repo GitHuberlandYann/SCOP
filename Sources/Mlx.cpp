@@ -4,11 +4,14 @@ Mlx::Mlx( Scop *scop ) : _angles{0, M_PI, 0}, _cos{1, -1, 1}, _sin{0, 0, 0},
 		_key_rot_x(0), _key_rot_y(0), _key_rot_z(0), _key_horizontal(0), _key_vertical(0),
 		_key_zoom(0), _key_color(0), _key_fill(0), _key_normal(0), _key_show_normals(0),
 		_key_plane_enable(0), _key_plane(0), _key_plane_side(0),
+		_key_perpective_enable(0), _key_perspective(0),
 		_scop(scop), _size(5), _offset_x(WIN_SIZE_X / 2), _offset_y(WIN_SIZE_Y / 2),
 		_color_mode(DEFAULT), _fill(false), _use_normal(false), _show_normals(false),
-		_plane_enable(false), _plane_side(true), _plane(0), _dir{0, 0, -1}
+		_plane_enable(false), _plane_side(true), _perspective_enable(false),
+		_plane(0), _perspective(50), _dir{0, 0, -1}
 {
 	std::cout << "Constructor of Mlx called" << std::endl;
+	_extremum = scop->get_extramum();
 }
 
 Mlx::~Mlx( void )
@@ -188,6 +191,14 @@ double Mlx::rotation_z( t_vertex vertex )
 	return (res);
 }
 
+double Mlx::add_perspective( double z_value )
+{
+	if (!_perspective_enable) {
+		return (1);
+	}
+	return (1 - z_value * _perspective / _extremum);
+}
+
 void Mlx::key_down( int kcode )
 {
 	// std::cout << "kcode: " << kcode << std::endl;
@@ -216,6 +227,10 @@ void Mlx::key_down( int kcode )
 		_use_normal = !_use_normal;
 	else if (kcode == KEY_N && ++_key_show_normals == 1)
 		_show_normals = !_show_normals;
+	else if (kcode == KEY_P && ++_key_perpective_enable == 1)
+		_perspective_enable = !_perspective_enable;
+	else if (kcode == KEY_M || kcode == KEY_L)
+		_key_perspective = (kcode == KEY_M) - (kcode == KEY_L);
 	else if (kcode == KEY_ASTERISK && ++_key_plane_enable == 1)
 		_plane_enable = !_plane_enable;
 	else if (kcode == KEY_ENTER_PAD && ++_key_plane_side == 1)
@@ -246,6 +261,10 @@ void Mlx::key_released( int kcode )
 		_key_normal = 0;
 	else if (kcode == KEY_N)
 		_key_show_normals = 0;
+	else if (kcode == KEY_P)
+		_key_perpective_enable = 0;
+	else if (kcode == KEY_M || kcode == KEY_L)
+		_key_perspective = 0;
 	else if (kcode == KEY_ASTERISK)
 		_key_plane_enable = 0;
 	else if (kcode == KEY_ENTER_PAD)
@@ -280,6 +299,7 @@ void Mlx::draw( void )
 		_size += _key_zoom;
 	}
 	_plane += _key_plane * 0.01;
+	_perspective += _key_perspective * 0.1;
 
 	clear_img();
 	_scop->map_img(this);
