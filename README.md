@@ -4,7 +4,7 @@ Spatial Computing and Object Pendering
 Project done during my formation at 19. https://campus19.be/
 
 ## Controls (Qwerty)
-´´´
+```
 WSADER      - turn object around
 arrows      - move object around
 +-          - size object
@@ -19,7 +19,7 @@ M L         - More Less perspective factor
 \* (pad)    - Enable/Disable plane {0, 0, z} cutting object
 +- (pad)    - change z coordinate of plane from point above
 enter (pad) - switch side of plane to hide
-´´´
+```
 
 ## Run
 After cloning the project, cd into repo and run:
