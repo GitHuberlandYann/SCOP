@@ -1,6 +1,6 @@
 #include "scop.h"
 
-Material::Material( std::string name, std::ifstream & indata, std::string & line ) : _name(name), _color(0xffffff)
+Material::Material( std::string name, std::ifstream & indata, std::string & line ) : _name(name), _color(0xffffff), _texture_index(-1)
 {
 	// std::cout << "Constructor of Material called" << std::endl;
 	if (name.empty()) {
@@ -15,8 +15,8 @@ Material::Material( std::string name, std::ifstream & indata, std::string & line
 			continue ;
 		} else if (!line.compare(0, 3, "Kd ")) {
 			set_rgb(line);
-		} else if (!line.compare(0, 7, "map_kd ")) {
-			continue ; //TODO add texture_img to scop and remember index here
+		} else if (!line.compare(0, 7, "map_Kd ")) {
+			_xpm_file = line.substr(7);
 		} else if (!line.compare(0, 7, "newmtl ")) {
 			return ;
 		}
@@ -59,4 +59,19 @@ unsigned int Material::get_color( void )
 std::string Material::get_name( void )
 {
 	return (_name);
+}
+
+std::string Material::get_xpm( void )
+{
+	return (_xpm_file);
+}
+
+size_t *Material::get_texture_index( void )
+{
+	return (&_texture_index);
+}
+
+void Material::set_texture_index( size_t index )
+{
+	_texture_index = (int)index;
 }

@@ -1,9 +1,10 @@
 #include "scop.h"
 
-Face::Face( Material *mat ) : _size(0), _color(0xffffff)
+Face::Face( Material *mat ) : _size(0), _color(0xffffff), _texture_index(NULL)
 {
 	if (mat) {
 		_color = mat->get_color();
+		_texture_index = mat->get_texture_index();
 	}
 }
 
@@ -18,9 +19,9 @@ Face::~Face( void )
 //                                  Private                                   //
 // ************************************************************************** //
 
-void Face::fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c )
+void Face::fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c, bool texture, t_vertex ta, t_vertex tb, t_vertex tc )
 {
-	t_vertex starta, startc, delta, deltc;
+	t_vertex starta, startc, delta, deltc, deltta, delttc;
 
 	starta = {a.x, a.y, 0};
 	startc = {c.x, c.y, 0};
@@ -43,10 +44,14 @@ void Face::fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c )
 	delta.y /= len;
 	deltc.x /= len;
 	deltc.y /= len;
-	//set cols here TODO
+
+	if (texture) {
+		deltta = {(tb.x - ta.x) / len, (tb.y - ta.y) / len, 0};
+		delttc = {(tb.x - tc.x) / len, (tb.y - tc.y) / len, 0};
+	}
 
 	for (; len > 0; --len) {
-		draw_line(mlx, a, c);
+		draw_line(mlx, a, c, texture, ta, tc);
 		a.x += delta.x;
 		if (delta.x)
 			a.y = delta.z * (a.x - starta.x) + starta.y;
@@ -57,26 +62,48 @@ void Face::fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c )
 			c.y = deltc.z * (c.x - startc.x) + startc.y;
 		else
 			c.y += deltc.y;
+		if (texture) {
+			ta.x += deltta.x;
+			ta.y += deltta.y;
+			tc.x += delttc.x;
+			tc.y += delttc.y;
+		}
 	}
 }
 
 void Face::fill_faces( Mlx *mlx )
 {
-	t_vertex f0, f1, f2;
+	if (mlx->_plane_enable) {
+		double z = mlx->rotation_z(_vertices[0]);
+		if (z * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
+			return ;
+		}
+	}
+	
+	t_vertex f0, f1, f2, t0, t1, t2;
+	bool texture = (mlx->_color_mode == TEXTURE && !_vertices_textures.empty() && _texture_index);
+	f0.x = mlx->rotation_x(_vertices[0]) * mlx->_size + mlx->_offset_x;
+	f0.y = mlx->rotation_y(_vertices[0]) * mlx->_size + mlx->_offset_y;
+
+	if (texture) {
+		t0 = mlx->set_textvert(_vertices_textures[0], *_texture_index);
+	}
 	for (int index = 1; index < _size - 1; ++index) {
-		f0.x = mlx->rotation_x(_vertices[0]) * mlx->_size + mlx->_offset_x;
-		f0.y = mlx->rotation_y(_vertices[0]) * mlx->_size + mlx->_offset_y;
 		f1.x = mlx->rotation_x(_vertices[index]) * mlx->_size + mlx->_offset_x;
 		f1.y = mlx->rotation_y(_vertices[index]) * mlx->_size + mlx->_offset_y;
 		f2.x = mlx->rotation_x(_vertices[index + 1]) * mlx->_size + mlx->_offset_x;
 		f2.y = mlx->rotation_y(_vertices[index + 1]) * mlx->_size + mlx->_offset_y;
-		fill_triangle(mlx, f0, f1, f2);
+		if (texture) {
+			t1 = mlx->set_textvert(_vertices_textures[index], *_texture_index);
+			t2 = mlx->set_textvert(_vertices_textures[index + 1], *_texture_index);
+		}
+		fill_triangle(mlx, f0, f1, f2, texture, t0, t1, t2);
 	}
 }
 
-void Face::draw_line( Mlx *mlx, t_vertex & a, t_vertex & b )
+void Face::draw_line( Mlx *mlx, t_vertex & a, t_vertex & b, bool texture, t_vertex ta, t_vertex tb )
 {
-	t_vertex delta, pixel;
+	t_vertex delta, pixel, deltt;
 	double len;
 
 	delta.x = b.x - a.x;
@@ -87,12 +114,23 @@ void Face::draw_line( Mlx *mlx, t_vertex & a, t_vertex & b )
 	delta.y /= len;
 	pixel.x = a.x;
 	pixel.y = a.y;
+
+	if (texture) {
+		deltt = {(tb.x - ta.x) / len, (tb.y - ta.y) / len, 0};
+	}
+
 	while (len > 0)
 	{
 		if (mlx->_color_mode == DEFAULT) {
 			mlx->put_pixel(pixel.x, pixel.y, 0xffffff);
 		} else if (mlx->_color_mode == MATERIAL) {
 			mlx->put_pixel(pixel.x, pixel.y, _color);
+		} else if (texture) {
+			mlx->put_pixel(pixel.x, pixel.y, mlx->get_pixel(*_texture_index, ta.x, ta.y));
+			ta.x += deltt.x;
+			ta.y += deltt.y;
+		} else {
+			mlx->put_pixel(pixel.x, pixel.y, 0x950321);
 		}
 		pixel.x += delta.x;
 		if (delta.x)
@@ -105,12 +143,23 @@ void Face::draw_line( Mlx *mlx, t_vertex & a, t_vertex & b )
 
 void Face::link_vertices( Mlx *mlx, int a, int b )
 {
+	if (mlx->_plane_enable) {
+		double z = mlx->rotation_z(_vertices[a]);
+		if (z * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
+			return ;
+		}
+		z = mlx->rotation_z(_vertices[b]);
+		if (z * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
+			return ;
+		}
+	}
+
 	t_vertex s, e;
 	s.x = mlx->rotation_x(_vertices[a]) * mlx->_size + mlx->_offset_x;
 	s.y = mlx->rotation_y(_vertices[a]) * mlx->_size + mlx->_offset_y;
 	e.x = mlx->rotation_x(_vertices[b]) * mlx->_size + mlx->_offset_x;
 	e.y = mlx->rotation_y(_vertices[b]) * mlx->_size + mlx->_offset_y;
-	draw_line(mlx, s, e);
+	draw_line(mlx, s, e, false, s, e);
 }
 
 // void Face::display_dir( Mlx *mlx )
@@ -136,7 +185,7 @@ void Face::link_normal( Mlx *mlx, int index )
 	s.y = mlx->rotation_y(_vertices[index]) * mlx->_size + mlx->_offset_y;
 	e.x = mlx->rotation_x(n) * mlx->_size + mlx->_offset_x;
 	e.y = mlx->rotation_y(n) * mlx->_size + mlx->_offset_y;
-	draw_line(mlx, s, e);
+	draw_line(mlx, s, e, false, s, e);
 }
 
 // ************************************************************************** //
@@ -180,7 +229,7 @@ void Face::draw_face( Mlx *mlx )
 		return (fill_faces(mlx));
 	}
 	for (int index = 0; index < _size - 1; index++) {
-		link_vertices(mlx, index, index + 1);
+		link_vertices(mlx, index, index + 1); //FYI possible work with 2 vertex and remember 1 between 0-1 and 1-2
 		link_normal(mlx, index);
 	}
 	link_vertices(mlx, 0, _size - 1);

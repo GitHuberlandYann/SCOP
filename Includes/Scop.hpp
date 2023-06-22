@@ -16,13 +16,11 @@ enum {
 
 class Scop {
 	private:
-		std::string _root;
 		int _face_mode;
 		std::vector<t_vertex> _vertices;
 		std::vector<t_vertex> _vertices_textures;
 		std::vector<t_vertex> _vertices_normals;
 		std::vector<Face *> _faces;
-		std::vector<Material *> _materials;
 		Material *_current_used_material;
 
 		void get_face( std::string line );
@@ -36,6 +34,9 @@ class Scop {
 	public:
 		Scop( std::string root );
 		~Scop( void );
+
+		std::string _root;
+		std::vector<Material *> _materials;
 
 		void parse( std::string file );
 		void display_content( void );

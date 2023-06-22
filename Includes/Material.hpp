@@ -5,6 +5,7 @@ class Material {
 	private:
 		std::string _name;
 		unsigned int _color; //kd
+		std::string _xpm_file;
 		size_t _texture_index; //map_kd
 
 		void set_rgb( std::string line );
@@ -15,6 +16,9 @@ class Material {
 
 		unsigned int get_color( void );
 		std::string get_name( void );
+		std::string get_xpm( void );
+		size_t *get_texture_index( void );
+		void set_texture_index( size_t index );
 
 };
 

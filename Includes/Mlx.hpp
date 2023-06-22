@@ -80,6 +80,8 @@ enum {
 	KEY_7 = 65429,
 	KEY_8 = 65431,
 	KEY_9 = 65434,
+	KEY_ASTERISK = 65450,
+	KEY_PLUS_PAD = 65451,
 	KEY_MINUS_PAD = 65453,
 	KEY_ENTER_PAD = 65421
 };
@@ -130,8 +132,10 @@ enum {
 	KEY_7 = 89,
 	KEY_8 = 91,
 	KEY_9 = 92,
+	KEY_ASTERISK = 67,
 	KEY_PLUS_PAD = 69,
-	KEY_MINUS_PAD = 78
+	KEY_MINUS_PAD = 78,
+	KEY_ENTER_PAD = 76
 };
 
 # endif
@@ -139,8 +143,19 @@ enum {
 enum {
 	DEFAULT,
 	MATERIAL,
+	TEXTURE,
 	LAST
 };
+
+typedef struct s_img {
+	void	*img_ptr;
+	char	*addr;
+	int		bits_per_pixel;
+	int		line_length;
+	int		endian;
+	int		width;
+	int		height;
+}				t_img;
 
 class Mlx {
 	private:
@@ -150,7 +165,9 @@ class Mlx {
 		int _img_bits_per_pixel;
 		int _img_line_length;
 		int _img_endian;
-		int _key_rot_x, _key_rot_y, _key_rot_z, _key_horizontal, _key_vertical, _key_zoom, _key_color, _key_fill, _key_normal, _key_show_normals;
+		int _key_rot_x, _key_rot_y, _key_rot_z, _key_horizontal, _key_vertical, _key_zoom,
+			_key_color, _key_fill, _key_normal, _key_show_normals, _key_plane_enable,
+			_key_plane, _key_plane_side;
 		Scop *_scop;
 
 		void clear_img( void );
@@ -161,10 +178,15 @@ class Mlx {
 		~Mlx( void );
 
 		int _size, _offset_x, _offset_y, _color_mode;
-		bool _fill, _use_normal, _show_normals;
+		bool _fill, _use_normal, _show_normals, _plane_enable, _plane_side;
+		double _plane;
 		t_vertex _dir;
+		std::vector<t_img *> _xpms;
 
+		void setup( void );
 		void put_pixel( int x, int y, unsigned int color );
+		unsigned int get_pixel( size_t texture_index, int x, int y );
+		t_vertex set_textvert( t_vertex base_vertex, size_t texture_index );
 		double rotation_x( t_vertex vertex );
 		double rotation_y( t_vertex vertex );
 		double rotation_z( t_vertex vertex );

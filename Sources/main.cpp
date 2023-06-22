@@ -30,12 +30,14 @@ int main( int ac, char **av )
 		return (1);
 
 	Scop *scop = new Scop(get_root(file));
+	Mlx *mlx = new Mlx(scop);
 	try {
 		scop->parse(file);
 		scop->display_content();
-		Mlx mlx(scop);
+		mlx->setup();
 	} catch (std::exception & e) {
 		std::cout << e.what() << std::endl;
+		delete mlx;
 		delete scop;
 		exit(1); //remove this to see leaks when quit
 	}

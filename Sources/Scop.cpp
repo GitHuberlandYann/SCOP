@@ -1,6 +1,6 @@
 #include "scop.h"
 
-Scop::Scop( std::string root ) : _root(root), _face_mode(UNSET), _current_used_material(NULL)
+Scop::Scop( std::string root ) : _face_mode(UNSET), _current_used_material(NULL), _root(root)
 {
 	std::cout << "Constructor of Scop called" << std::endl;
 }
