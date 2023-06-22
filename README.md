@@ -16,7 +16,7 @@ N           - Display vertices' normal vector
 P           - Enable/Disable perspective
 M L         - More Less perspective factor
 
-\* (pad)    - Enable/Disable plane {0, 0, z} cutting object
+* (pad)     - Enable/Disable plane {0, 0, z} cutting object
 +- (pad)    - change z coordinate of plane from point above
 enter (pad) - switch side of plane to hide
 ```
