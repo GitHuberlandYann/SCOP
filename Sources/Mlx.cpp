@@ -6,7 +6,7 @@ Mlx::Mlx( Scop *scop ) : _angles{0, M_PI, 0}, _cos{1, -1, 1}, _sin{0, 0, 0},
 		_key_plane_enable(0), _key_plane(0), _key_plane_side(0),
 		_scop(scop), _size(5), _offset_x(WIN_SIZE_X / 2), _offset_y(WIN_SIZE_Y / 2),
 		_color_mode(DEFAULT), _fill(false), _use_normal(false), _show_normals(false),
-		_plane_enable(false), _plane_side(false), _plane(0), _dir{0, 0, -1}
+		_plane_enable(false), _plane_side(true), _plane(0), _dir{0, 0, -1}
 {
 	std::cout << "Constructor of Mlx called" << std::endl;
 }
@@ -101,6 +101,7 @@ void Mlx::setup( void ) {
 		nimg->img_ptr = mlx_xpm_file_to_image(_mlx_ptr,
 			title_str, &nimg->width, &nimg->height);
 		if (!nimg->img_ptr) {
+			std::cout << "xpm file: " << title << std::endl;
 			throw MlxCallException();
 		}
 		nimg->addr = mlx_get_data_addr(nimg->img_ptr, &nimg->bits_per_pixel,
@@ -152,6 +153,7 @@ unsigned int Mlx::get_pixel( size_t texture_index, int x, int y )
 t_vertex Mlx::set_textvert( t_vertex base_vertex, size_t texture_index )
 {
 	base_vertex.x *= _xpms[texture_index]->width;
+	base_vertex.y = 1 - base_vertex.y; //don't know why but I have to do this ..
 	base_vertex.y *= _xpms[texture_index]->height;
 	return (base_vertex);
 }
