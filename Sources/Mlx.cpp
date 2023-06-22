@@ -283,6 +283,6 @@ void Mlx::draw( void )
 
 	clear_img();
 	_scop->map_img(this);
-	put_pixel(WIN_SIZE_X / 2, WIN_SIZE_Y /2, 0xff0000);
+	// put_pixel(WIN_SIZE_X / 2, WIN_SIZE_Y /2, 0xff0000);
 	mlx_put_image_to_window(_mlx_ptr, _win_ptr, _img_ptr, 0, 0);
 }

@@ -143,6 +143,24 @@ void Scop::get_face( std::string line )
 	}
 }
 
+/* set min and max box values if needed and push vertex to vector */
+void Scop::push_vertex( t_vertex vertex )
+{
+	if (vertex.x > _max_box.x)
+		_max_box.x = vertex.x;
+	if (vertex.y > _max_box.y)
+		_max_box.y = vertex.y;
+	if (vertex.z > _max_box.z)
+		_max_box.z = vertex.z;
+	if (vertex.x < _min_box.x)
+		_min_box.x = vertex.x;
+	if (vertex.y < _min_box.y)
+		_min_box.y = vertex.y;
+	if (vertex.z < _min_box.z)
+		_min_box.z = vertex.z;
+	_vertices.push_back(vertex);
+}
+
 /* read .mtl file and store its info if correct */
 void Scop::add_materials( std::string file )
 {
@@ -205,7 +223,7 @@ void Scop::parse( std::string file )
 		if (line.empty() || line[0] == '#') {
 			continue ;
 		} else if (!line.compare(0, 2, "v ")) {
-			_vertices.push_back(parse_vertex(line, 2, false));
+			push_vertex(parse_vertex(line, 2, false));
 		} else if (!line.compare(0, 3, "vt ")) {
 			_vertices_textures.push_back(parse_vertex(line, 3, true));
 		} else if (!line.compare(0, 3, "vn ")) {
@@ -219,4 +237,8 @@ void Scop::parse( std::string file )
 		}
 	}
 	indata.close();
+
+	if (_faces.empty()) {
+		throw EmptyObjectException();
+	}
 }

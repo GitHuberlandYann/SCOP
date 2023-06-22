@@ -34,6 +34,7 @@ int main( int ac, char **av )
 	try {
 		scop->parse(file);
 		scop->display_content();
+		scop->center_object();
 		mlx->setup();
 	} catch (std::exception & e) {
 		std::cout << e.what() << std::endl;

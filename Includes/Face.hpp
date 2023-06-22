@@ -29,6 +29,7 @@ class Face {
 		void add_vertex( t_vertex *vertex, t_vertex *texture, t_vertex *normal );
 		size_t get_size( void );
 		void draw_face( Mlx *mlx );
+		void center_object( t_vertex central_axis );
 };
 
 #endif

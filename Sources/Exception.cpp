@@ -50,6 +50,11 @@ const char* InvalidRGBException::what() const throw()
 	return ("[InvalidRGBException] RGB in .mlt must be in range [0:1].");
 }
 
+const char* EmptyObjectException::what() const throw()
+{
+	return ("[EmptyObjectException] .obj has no faces.");
+}
+
 const char* MlxCallException::what() const throw()
 {
 	return ("[MlxCallException] Call to mlx function failed.");

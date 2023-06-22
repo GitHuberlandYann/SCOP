@@ -81,7 +81,7 @@ void Face::fill_faces( Mlx *mlx )
 	}
 	
 	t_vertex f0, f1, f2, t0, t1, t2;
-	bool texture = (mlx->_color_mode == TEXTURE && !_vertices_textures.empty() && _texture_index);
+	bool texture = (mlx->_color_mode == TEXTURE && !_vertices_textures.empty() && _texture_index && *_texture_index != std::string::npos);
 	f0.x = mlx->rotation_x(_vertices[0]) * mlx->_size + mlx->_offset_x;
 	f0.y = mlx->rotation_y(_vertices[0]) * mlx->_size + mlx->_offset_y;
 
@@ -236,4 +236,16 @@ void Face::draw_face( Mlx *mlx )
 	link_normal(mlx, _size - 1);
 
 	// display_dir(mlx);
+}
+
+void Face::center_object( t_vertex central_axis )
+{
+	std::vector<t_vertex>::iterator it = _vertices.begin();
+	std::vector<t_vertex>::iterator ite = _vertices.end();
+
+	for (; it != ite; it++) {
+		(*it).x -= central_axis.x;
+		(*it).y -= central_axis.y;
+		(*it).z -= central_axis.z;
+	}
 }

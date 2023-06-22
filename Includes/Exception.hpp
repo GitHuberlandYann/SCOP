@@ -63,6 +63,12 @@ class InvalidRGBException : public std::exception
 		const char *what() const throw();
 };
 
+class EmptyObjectException : public std::exception
+{
+	public:
+		const char *what() const throw();
+};
+
 class MlxCallException : public std::exception
 {
 	public:

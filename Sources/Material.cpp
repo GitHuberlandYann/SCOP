@@ -1,6 +1,6 @@
 #include "scop.h"
 
-Material::Material( std::string name, std::ifstream & indata, std::string & line ) : _name(name), _color(0xffffff), _texture_index(-1)
+Material::Material( std::string name, std::ifstream & indata, std::string & line ) : _name(name), _color(0xffffff), _texture_index(std::string::npos)
 {
 	// std::cout << "Constructor of Material called" << std::endl;
 	if (name.empty()) {

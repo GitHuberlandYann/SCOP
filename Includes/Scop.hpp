@@ -17,6 +17,8 @@ enum {
 class Scop {
 	private:
 		int _face_mode;
+		t_vertex _max_box;
+		t_vertex _min_box;
 		std::vector<t_vertex> _vertices;
 		std::vector<t_vertex> _vertices_textures;
 		std::vector<t_vertex> _vertices_normals;
@@ -25,6 +27,7 @@ class Scop {
 
 		void get_face( std::string line );
 		void add_vertex_face( Face *face, std::string line, size_t & index );
+		void push_vertex( t_vertex vertex );
 		t_vertex *get_vertex( int num );
 		t_vertex *get_texture( int num );
 		t_vertex *get_normal( int num );
@@ -40,7 +43,8 @@ class Scop {
 
 		void parse( std::string file );
 		void display_content( void );
-		void map_img(Mlx *mlx);
+		void center_object( void );
+		void map_img( Mlx *mlx );
 };
 
 
