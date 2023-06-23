@@ -140,11 +140,20 @@ enum {
 
 # endif
 
-enum {
+enum color_mode {
 	DEFAULT,
 	MATERIAL,
 	TEXTURE,
+	GRAY,
 	LAST
+};
+
+enum shades {
+	S_WHITE,
+	S_RED,
+	S_GREEN,
+	S_BLUE,
+	S_LAST
 };
 
 typedef struct s_img {
@@ -167,7 +176,8 @@ class Mlx {
 		int _img_endian;
 		int _key_rot_x, _key_rot_y, _key_rot_z, _key_horizontal, _key_vertical, _key_zoom,
 			_key_color, _key_fill, _key_normal, _key_show_normals, _key_plane_enable,
-			_key_plane, _key_plane_side, _key_perpective_enable, _key_perspective;
+			_key_plane, _key_plane_side, _key_perpective_enable, _key_perspective,
+			_key_shade;
 		double _extremum;
 		Scop *_scop;
 
@@ -178,7 +188,7 @@ class Mlx {
 		Mlx( Scop *scop );
 		~Mlx( void );
 
-		int _size, _offset_x, _offset_y, _color_mode;
+		int _size, _offset_x, _offset_y, _color_mode, _shade;
 		bool _fill, _use_normal, _show_normals, _plane_enable, _plane_side, _perspective_enable;
 		double _plane, _perspective;
 		t_vertex _dir;

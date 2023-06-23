@@ -14,7 +14,7 @@ Material::Material( std::string name, std::ifstream & indata, std::string & line
 		if (line.empty() || line[0] == '#') {
 			continue ;
 		} else if (!line.compare(0, 3, "Kd ")) {
-			set_rgb(line);
+			set_kd(line);
 		} else if (!line.compare(0, 7, "map_Kd ")) {
 			_xpm_file = line.substr(7);
 		} else if (!line.compare(0, 7, "newmtl ")) {
@@ -32,7 +32,7 @@ Material::~Material( void )
 //                                  Private                                   //
 // ************************************************************************** //
 
-void Material::set_rgb( std::string line )
+void Material::set_kd( std::string line )
 {
 	t_vertex rgb_01 = parse_vertex(line, 3, false);
 
@@ -40,9 +40,7 @@ void Material::set_rgb( std::string line )
 		|| rgb_01.z < 0 || rgb_01.z > 1) {
 		throw InvalidRGBException();
 	}
-	_color = (int)(rgb_01.x * 255) * 0x10000;
-	_color += (int)(rgb_01.y * 255) * 0x100;
-	_color += (int)(rgb_01.z * 255);
+	set_rgb(_color, (int)(rgb_01.x * 255), (int)(rgb_01.y * 255), (int)(rgb_01.z * 255));
 
 	// std::cout << "rgb of material set to: " << _color << std::endl;
 }

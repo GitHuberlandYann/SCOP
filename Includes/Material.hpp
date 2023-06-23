@@ -8,7 +8,7 @@ class Material {
 		std::string _xpm_file;
 		size_t _texture_index; //map_kd
 
-		void set_rgb( std::string line );
+		void set_kd( std::string line );
 
 	public:
 		Material( std::string name, std::ifstream & indata, std::string & line );

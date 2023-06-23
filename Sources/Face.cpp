@@ -1,11 +1,16 @@
 #include "scop.h"
 
-Face::Face( Material *mat ) : _size(0), _color(0xffffff), _texture_index(NULL)
+Face::Face( Material *mat, int generated_color ) : _size(0), _color(0xffffff), _texture_index(NULL)
 {
 	if (mat) {
 		_color = mat->get_color();
 		_texture_index = mat->get_texture_index();
 	}
+
+	set_rgb(_grays[0], generated_color, generated_color, generated_color);
+	set_rgb(_grays[1], generated_color + 50, generated_color - 50, generated_color - 50); //!!this works because gen_col [50:200]
+	set_rgb(_grays[2], generated_color - 50, generated_color + 50, generated_color - 50);
+	set_rgb(_grays[3], generated_color - 50, generated_color - 50, generated_color + 50);
 }
 
 Face::~Face( void )
@@ -140,6 +145,8 @@ void Face::draw_line( Mlx *mlx, t_vertex & a, t_vertex & b, bool texture, t_vert
 			mlx->put_pixel(pixel.x, pixel.y, mlx->get_pixel(*_texture_index, ta.x, ta.y));
 			ta.x += deltt.x;
 			ta.y += deltt.y;
+		} else if (mlx->_color_mode == GRAY) {
+			mlx->put_pixel(pixel.x, pixel.y, _grays[mlx->_shade]);
 		} else {
 			mlx->put_pixel(pixel.x, pixel.y, 0x950321);
 		}

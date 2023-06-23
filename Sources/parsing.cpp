@@ -124,10 +124,11 @@ void Scop::add_vertex_face( Face *face, std::string line, size_t & index )
 	}
 }
 
-/* check if face line is correct, return instance of class Face */
-void Scop::get_face( std::string line )
+/* check if face line is correct, return instance of class Face
+/  generated_color is a int in range(50, 200) used to color face */
+void Scop::push_face( std::string line, int generated_color )
 {
-	Face *new_face = new Face(_current_used_material);
+	Face *new_face = new Face(_current_used_material, generated_color);
 	_faces.push_back(new_face);
 	size_t index = 2;
 
@@ -211,6 +212,9 @@ void Scop::set_material( std::string name )
 /* read .obj file provided and store its informations if they are correct */
 void Scop::parse( std::string file )
 {
+	std::default_random_engine generator;
+	std::uniform_int_distribution<int> distribution(50, 200);
+
 	std::ifstream indata(file.c_str());
 	if (!indata.is_open()) {
 		throw InvalidFileException();
@@ -229,7 +233,7 @@ void Scop::parse( std::string file )
 		} else if (!line.compare(0, 3, "vn ")) {
 			_vertices_normals.push_back(parse_vertex(line, 3, false));
 		} else if (!line.compare(0, 2, "f ")) {
-			get_face(line);
+			push_face(line, distribution(generator)); //generate random int from [50:200]
 		} else if (!line.compare(0, 7, "usemtl ")) {
 			set_material(line.substr(7));
 		} else if (!line.compare(0, 7, "mtllib ")) {

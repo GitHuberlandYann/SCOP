@@ -130,3 +130,8 @@ void set_vertex( t_vertex & vertex, double x, double y, double z )
 	vertex.y = y;
 	vertex.z = z;
 }
+
+void set_rgb( unsigned int & color, int r, int g, int b )
+{
+	color = r * 0x10000 + g * 0x100 + b;
+}

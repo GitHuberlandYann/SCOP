@@ -13,6 +13,7 @@ class Face {
 		std::vector<t_vertex> _vertices_textures;
 		std::vector<t_vertex> _vertices_normals;
 		unsigned int _color;
+		unsigned int _grays[4];
 		size_t *_texture_index;
 
 		void fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c, bool texture, t_vertex ta, t_vertex tb, t_vertex tc );
@@ -23,7 +24,7 @@ class Face {
 		void link_normal( Mlx *mlx, int index );
 
 	public:
-		Face( Material *mat );
+		Face( Material *mat, int generated_color );
 		~Face( void );
 
 		void add_vertex( t_vertex *vertex, t_vertex *texture, t_vertex *normal );

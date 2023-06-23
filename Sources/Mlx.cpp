@@ -3,9 +3,9 @@
 Mlx::Mlx( Scop *scop ) : _key_rot_x(0), _key_rot_y(0), _key_rot_z(0), _key_horizontal(0), _key_vertical(0),
 		_key_zoom(0), _key_color(0), _key_fill(0), _key_normal(0), _key_show_normals(0),
 		_key_plane_enable(0), _key_plane(0), _key_plane_side(0),
-		_key_perpective_enable(0), _key_perspective(0),
+		_key_perpective_enable(0), _key_perspective(0), _key_shade(0),
 		_scop(scop), _size(5), _offset_x(WIN_SIZE_X / 2), _offset_y(WIN_SIZE_Y / 2),
-		_color_mode(DEFAULT), _fill(false), _use_normal(false), _show_normals(false),
+		_color_mode(DEFAULT), _shade(S_WHITE), _fill(false), _use_normal(false), _show_normals(false),
 		_plane_enable(false), _plane_side(true), _perspective_enable(false),
 		_plane(0), _perspective(50)
 {
@@ -217,12 +217,14 @@ void Mlx::key_down( int kcode )
 		_key_vertical = (kcode == KEY_DOWN) - (kcode == KEY_UP);
 	else if (kcode == KEY_PLUS || kcode == KEY_MINUS)
 		_key_zoom = (kcode == KEY_PLUS) - (kcode == KEY_MINUS);
-	else if (kcode == KEY_C && ++_key_color == 1)
-	{
+	else if (kcode == KEY_C && ++_key_color == 1) {
 		++_color_mode;
-		if (_color_mode == LAST) {
+		if (_color_mode == LAST)
 			_color_mode = DEFAULT;
-		}
+	} else if (kcode == KEY_X && ++_key_shade == 1) {
+		++_shade;
+		if (_shade == S_LAST)
+			_shade = S_WHITE;
 	}
 	else if (kcode == KEY_F && ++_key_fill == 1)
 		_fill = !_fill;
@@ -258,6 +260,8 @@ void Mlx::key_released( int kcode )
 		_key_zoom = 0;
 	else if (kcode == KEY_C)
 		_key_color = 0;
+	else if (kcode == KEY_X)
+		_key_shade = 0;
 	else if (kcode == KEY_F)
 		_key_fill = 0;
 	else if (kcode == KEY_V)

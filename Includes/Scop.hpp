@@ -25,7 +25,7 @@ class Scop {
 		std::vector<Face *> _faces;
 		Material *_current_used_material;
 
-		void get_face( std::string line );
+		void push_face( std::string line, int generated_color );
 		void add_vertex_face( Face *face, std::string line, size_t & index );
 		void push_vertex( t_vertex vertex );
 		t_vertex *get_vertex( int num );

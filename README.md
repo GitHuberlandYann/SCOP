@@ -9,7 +9,8 @@ WSADER      - turn object around
 arrows      - move object around
 +-          - size object
 
-C           - switch color mode (DEFAULT-MATERIAL-TEXTURE)
+C           - switch color mode (DEFAULT-MATERIAL-TEXTURE-GRAYS)
+X           - switch shading when color mode is GRAYS (WHITE-RED-GREEN-BLUE)
 V           - Hide/Show faces with normals facing away from viewpoint
 F           - Fill faces with color
 N           - Display vertices' normal vector
