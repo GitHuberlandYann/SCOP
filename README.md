@@ -30,8 +30,6 @@ After cloning the project, cd into repo and run:
 /SCOP $> ./scop Ressources/file_you_want.obj
 ```
 
-Currently should not be working on mac ..
-
 If you have never run a project using mlxlib .. best of luck with compiling
 
 ## Sample

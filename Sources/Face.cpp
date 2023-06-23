@@ -21,14 +21,14 @@ Face::~Face( void )
 
 void Face::fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c, bool texture, t_vertex ta, t_vertex tb, t_vertex tc )
 {
-	t_vertex starta, startc, delta, deltc, deltta, delttc;
+	t_vertex deltta, delttc;
 
-	starta = {a.x, a.y, 0};
-	startc = {c.x, c.y, 0};
+	t_vertex starta = {a.x, a.y, 0};
+	t_vertex startc = {c.x, c.y, 0};
 
-	delta = {b.x - a.x, b.y - a.y, 0};
+	t_vertex delta = {b.x - a.x, b.y - a.y, 0};
 	delta.z = delta.y / delta.x;
-	deltc = {b.x - c.x, b.y - c.y, 0};
+	t_vertex deltc = {b.x - c.x, b.y - c.y, 0};
 	deltc.z = deltc.y / deltc.x;
 	
 	double len;
@@ -46,8 +46,10 @@ void Face::fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c, bool tex
 	deltc.y /= len;
 
 	if (texture) {
-		deltta = {(tb.x - ta.x) / len, (tb.y - ta.y) / len, 0};
-		delttc = {(tb.x - tc.x) / len, (tb.y - tc.y) / len, 0};
+		deltta.x = (tb.x - ta.x) / len;
+		deltta.y = (tb.y - ta.y) / len;
+		delttc.x = (tb.x - tc.x) / len;
+		delttc.y = (tb.y - tc.y) / len;
 	}
 
 	for (; len > 0; --len) {
@@ -124,7 +126,8 @@ void Face::draw_line( Mlx *mlx, t_vertex & a, t_vertex & b, bool texture, t_vert
 	pixel.y = a.y;
 
 	if (texture) {
-		deltt = {(tb.x - ta.x) / len, (tb.y - ta.y) / len, 0};
+		deltt.x = (tb.x - ta.x) / len;
+		deltt.y = (tb.y - ta.y) / len;
 	}
 
 	while (len > 0)
@@ -192,8 +195,9 @@ void Face::link_normal( Mlx *mlx, int index )
 		return ;
 	}
 
-	t_vertex s, e, n;
-	n = {_vertices[index].x + _vertices_normals[index].x, _vertices[index].y + _vertices_normals[index].y, _vertices[index].z + _vertices_normals[index].z};
+	t_vertex s, e;
+	t_vertex n = {_vertices[index].x + _vertices_normals[index].x, _vertices[index].y + _vertices_normals[index].y, _vertices[index].z + _vertices_normals[index].z};
+	
 	s.x = mlx->rotation_x(_vertices[index]) * mlx->_size + mlx->_offset_x;
 	s.y = mlx->rotation_y(_vertices[index]) * mlx->_size + mlx->_offset_y;
 	e.x = mlx->rotation_x(n) * mlx->_size + mlx->_offset_x;
@@ -230,7 +234,9 @@ void Face::draw_face( Mlx *mlx )
 	t_vertex norm;
 	if (mlx->_use_normal && !_vertices_normals.empty()) {
 		for (int index = 0; index < _size; index++) {
-			norm = {mlx->rotation_x(_vertices_normals[index]), mlx->rotation_y(_vertices_normals[index]), mlx->rotation_z(_vertices_normals[index])};
+			norm.x = mlx->rotation_x(_vertices_normals[index]);
+			norm.y = mlx->rotation_y(_vertices_normals[index]);
+			norm.z = mlx->rotation_z(_vertices_normals[index]);
 			scalar = mlx->_dir.x * norm.x + mlx->_dir.y * norm.y + mlx->_dir.z * norm.z;
 			if (scalar < 0) {
 				return ;

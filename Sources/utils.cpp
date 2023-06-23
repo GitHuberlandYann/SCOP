@@ -123,3 +123,10 @@ int	event_mlx_draw( void *param )
 	mlx->draw();
 	return (0);
 }
+
+void set_vertex( t_vertex & vertex, double x, double y, double z )
+{
+	vertex.x = x;
+	vertex.y = y;
+	vertex.z = z;
+}

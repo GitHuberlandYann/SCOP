@@ -1,9 +1,10 @@
 #include "scop.h"
 
-Scop::Scop( std::string root ) : _face_mode(UNSET), _max_box{-10000, -10000, -10000},
-		_min_box{10000, 10000, 10000}, _current_used_material(NULL), _root(root)
+Scop::Scop( std::string root ) : _face_mode(UNSET), _current_used_material(NULL), _root(root)
 {
 	std::cout << "Constructor of Scop called" << std::endl;
+	set_vertex(_max_box, -10000, -10000, -10000);
+	set_vertex(_min_box, 10000, 10000, 10000);
 }
 
 Scop::~Scop( void )
