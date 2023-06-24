@@ -45,7 +45,7 @@ t_vertex *Scop::get_normal( int num )
 	return (&_vertices_normals[num - 1]);
 }
 
-/* parse v[/vt/vn] and get given vertices from storage */
+/* parse v[/vt/vn] from f line and get given vertices from storage */
 void Scop::add_vertex_face( Face *face, std::string line, size_t & index )
 {
 	size_t tmp_index;

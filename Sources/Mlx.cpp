@@ -1,6 +1,7 @@
 #include "scop.h"
 
-Mlx::Mlx( Scop *scop ) : _key_rot_x(0), _key_rot_y(0), _key_rot_z(0), _key_horizontal(0), _key_vertical(0),
+Mlx::Mlx( Scop *scop ) : _mlx_ptr(NULL), _win_ptr(NULL), _img_ptr(NULL),
+		_key_rot_x(0), _key_rot_y(0), _key_rot_z(0), _key_horizontal(0), _key_vertical(0),
 		_key_zoom(0), _key_color(0), _key_fill(0), _key_normal(0), _key_show_normals(0),
 		_key_plane_enable(0), _key_plane(0), _key_plane_side(0),
 		_key_perpective_enable(0), _key_reset(0), _key_shade(0), _key_depth_enable(0),
@@ -16,31 +17,31 @@ Mlx::Mlx( Scop *scop ) : _key_rot_x(0), _key_rot_y(0), _key_rot_z(0), _key_horiz
 	set_vertex(_dir, 0, 0, -1);
 }
 
+// int	mlx_destroy_window(void *mlx_ptr, void *win_ptr);
+// int	mlx_destroy_image(void *mlx_ptr, void *img_ptr);
+// int	mlx_destroy_display(void *mlx_ptr);
 Mlx::~Mlx( void )
 {
 	std::cout << "Destructor of Mlx called" << std::endl;
-	// if (_mlx_ptr) {
-	// 	free(_mlx_ptr);
-	// }
-	// if (_win_ptr) {
-	// 	free(_win_ptr);
-	// }
-	// if (_img_ptr) {
-	// 	free(_img_ptr);
-	// }
-// 	int	mlx_destroy_window(void *mlx_ptr, void *win_ptr);
-
-// int	mlx_destroy_image(void *mlx_ptr, void *img_ptr);
-
-// int	mlx_destroy_display(void *mlx_ptr);
+	if (_img_ptr) {
+		mlx_destroy_image(_mlx_ptr, _img_ptr);
+	}
 
 	std::vector<t_img *>::iterator it = _xpms.begin();
 	std::vector<t_img *>::iterator ite = _xpms.end();
 	
 	for (; it != ite; it++) {
+		mlx_destroy_image(_mlx_ptr, (*it)->img_ptr);
 		delete *it;
 	}
 	_xpms.clear();
+
+	if (_win_ptr) {
+		mlx_destroy_window(_mlx_ptr, _win_ptr);
+	}
+	if (_mlx_ptr) {
+		free(_mlx_ptr);
+	}
 }
 
 // ************************************************************************** //
@@ -53,23 +54,11 @@ void Mlx::clear_img( void )
 	_depth_enable = false;
 	for (int x = 0; x < WIN_SIZE_X; x++) {
 		for (int y = 0; y < WIN_SIZE_Y; y++) {
-			put_pixel(x, y, 0x0, 0);
+			put_pixel(x, y, 0x606060, 0);
 		}
 	}
 	_depth_enable = saved_depth_enable;
 }
-
-// void Mlx::set_dir( void )
-// {
-// 	_dir.x = -(_cos.x * _sin.y * _cos.z + _sin.x * _sin.z);
-// 	_dir.y = -(_cos.x * _sin.y * _sin.z - _sin.x * _cos.z);
-// 	_dir.z = -(_cos.x * _cos.y);
-
-// 	// std::cout << "alpha: " << _angles.x / M_PI * 180 << std::endl;
-// 	// std::cout << "beta: " << _angles.y / M_PI * 180 << std::endl;
-// 	// std::cout << "gamma: " << _angles.z / M_PI * 180 << std::endl;
-// 	// std::cout << "dir: " << _dir.x << ", " << _dir.y << ", " << _dir.z << std::endl;
-// }
 
 // ************************************************************************** //
 //                                  Public                                    //
@@ -117,7 +106,7 @@ void Mlx::setup( void ) {
 		(*it)->set_texture_index(cnt);
 		++cnt;
 	}
-	std::cout << " ---- number of xpms: " << cnt << " ----" << std::endl;
+	std::cout << " ---- number of xpms: " << cnt << " ----" << std::endl << std::endl;
 
 	_scop->map_img(this);
 	mlx_put_image_to_window(_mlx_ptr, _win_ptr, _img_ptr, 0, 0);
@@ -164,8 +153,6 @@ unsigned int Mlx::get_pixel( size_t texture_index, int x, int y )
 	t_img *img = _xpms[texture_index];
 	limit_x = img->width;
 	limit_y = img->height;
-	// x *= limit_x;
-	// y *= limit_y;
 	if (y < 0 || y >= limit_y || x < 0 || x >= limit_x)
 		return (0x0);
 	dst = img->addr + (y * img->line_length + x * (img->bits_per_pixel / 8));

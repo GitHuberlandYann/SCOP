@@ -74,6 +74,18 @@ t_vertex parse_vertex( std::string line, size_t index, bool texture )
 	new_vertex.y = std::stod(line.substr(index + 1), &tmp_index);
 	index += tmp_index + 1;
 	if (texture) {
+		while (new_vertex.x < 0) {
+			++new_vertex.x;
+		}
+		while (new_vertex.y < 0) {
+			++new_vertex.y;
+		}
+		while (new_vertex.x > 1) {
+			--new_vertex.x;
+		}
+		while (new_vertex.y > 1) {
+			--new_vertex.y;
+		}
 		return (new_vertex);
 	}
 	if (line[index] != ' ') {

@@ -7,7 +7,7 @@ static std::string get_file( int ac, char **av )
 	} else if (ac == 2) {
 		std::string res(av[1]);
 
-		if (res.size() >= 4 && !res.compare(res.size() - 4, 4, ".obj")) {
+		if (res.size() >= 4 && (!res.compare(res.size() - 4, 4, ".obj") || !res.compare(res.size() - 4, 4, ".OBJ"))) {
 			return (res);
 		}
 	}
