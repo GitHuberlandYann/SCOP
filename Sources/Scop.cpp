@@ -33,6 +33,31 @@ Scop::~Scop( void )
 }
 
 // ************************************************************************** //
+//                                  Private                                   //
+// ************************************************************************** //
+
+double Scop::get_extremum( void )
+{
+	double res = _max_box.x;
+	if (_max_box.y > res) {
+		res = _max_box.y;
+	}
+	if (_max_box.z > res) {
+		res = _max_box.z;
+	}
+	if (-_min_box.x > res) {
+		res = -_min_box.x;
+	}
+	if (-_min_box.y > res) {
+		res = -_min_box.y;
+	}
+	if (-_min_box.z > res) {
+		res = -_min_box.z;
+	}
+	return (res);
+}
+
+// ************************************************************************** //
 //                                  Public                                    //
 // ************************************************************************** //
 
@@ -44,6 +69,9 @@ void Scop::display_content( void )
 	std::cout << "\t-Number of vertices_normals: " << _vertices_normals.size() << std::endl;
 	std::cout << "\t-Number of faces: " << _faces.size() << std::endl;
 	std::cout << "\t-Number of materials: " << _materials.size() << std::endl;
+	std::cout << "\t-box x[" << _min_box.x << ':' << _max_box.x << ']' << std::endl;
+	std::cout << "\t     y[" << _min_box.y << ':' << _max_box.y << ']' << std::endl;
+	std::cout << "\t     z[" << _min_box.z << ':' << _max_box.z << ']' << std::endl;
 	std::cout << std::endl << " ----------------------" << std::endl << std::endl;
 }
 
@@ -53,38 +81,24 @@ void Scop::center_object( void )
 	t_vertex central_axis = {(_max_box.x + _min_box.x) / 2,
 								(_max_box.y + _min_box.y) / 2,
 								(_max_box.z + _min_box.z) / 2};
-	
+
 	// std::cout << "max: {" << _max_box.x << ", " << _max_box.y << ", " << _max_box.z << "}" << std::endl;
 	// std::cout << "min: {" << _min_box.x << ", " << _min_box.y << ", " << _min_box.z << "}" << std::endl;
 	// std::cout << "axis: {" << central_axis.x << ", " << central_axis.y << ", " << central_axis.z << "}" << std::endl;
+	
+	_max_box.x -= central_axis.x;
+	_max_box.y -= central_axis.y;
+	_max_box.z -= central_axis.z;
+	_min_box.x -= central_axis.x;
+	_min_box.y -= central_axis.y;
+	_min_box.z -= central_axis.z;
 
 	std::vector<Face *>::iterator it = _faces.begin();
 	std::vector<Face *>::iterator ite = _faces.end();
 
 	for (; it != ite; it++) {
-		(*it)->center_object(central_axis);
+		(*it)->center_object(central_axis, EXTREMUM / get_extremum());
 	}
-}
-
-double Scop::get_extramum( void )
-{
-	double res = fabs(_max_box.x);
-	if (fabs(_max_box.y) > res) {
-		res = fabs(_max_box.y);
-	}
-	if (fabs(_max_box.z) > res) {
-		res = fabs(_max_box.z);
-	}
-	if (fabs(_min_box.x) > res) {
-		res = fabs(_min_box.x);
-	}
-	if (fabs(_min_box.y) > res) {
-		res = fabs(_min_box.y);
-	}
-	if (fabs(_min_box.z) > res) {
-		res = fabs(_min_box.z);
-	}
-	return (res);
 }
 
 void Scop::map_img( Mlx *mlx )

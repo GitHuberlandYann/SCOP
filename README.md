@@ -9,13 +9,13 @@ WSADER      - turn object around
 arrows      - move object around
 +-          - size object
 
-C           - switch color mode (DEFAULT-MATERIAL-TEXTURE-GRAYS)
+C           - switch color mode (DEFAULT-MATERIAL-TEXTURE-GRAYS-GRADIENT)
 X           - switch shading when color mode is GRAYS (WHITE-RED-GREEN-BLUE)
 V           - Hide/Show faces with normals facing away from viewpoint
 F           - Fill faces with color
 N           - Display vertices' normal vector
+O           - Reset all settings to original values
 P           - Enable/Disable perspective
-M L         - More Less perspective factor
 
 * (pad)     - Enable/Disable plane {0, 0, z} cutting object
 +- (pad)    - change z coordinate of plane from point above

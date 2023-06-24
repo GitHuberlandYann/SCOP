@@ -135,3 +135,13 @@ void set_rgb( unsigned int & color, int r, int g, int b )
 {
 	color = r * 0x10000 + g * 0x100 + b;
 }
+
+unsigned int get_gradient( t_vertex v )
+{
+	set_vertex(v, (v.x + EXTREMUM) / (2 * EXTREMUM) * 255,
+					(v.y + EXTREMUM) / (2 * EXTREMUM) * 255,
+					(v.z + EXTREMUM) / (2 * EXTREMUM) * 255);
+	unsigned int res;
+	set_rgb(res, v.x, v.y, v.z);
+	return (res);
+}

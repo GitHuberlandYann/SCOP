@@ -15,6 +15,8 @@ extern "C" {
 #  define WIN_SIZE_Y 1400
 # endif
 
+# define EXTREMUM 50.0
+
 enum {	//events supported on mac (only a fraction of what can be found on x11)
 	ON_KEYDOWN = 2,
 	ON_KEYUP = 3,
@@ -145,6 +147,7 @@ enum color_mode {
 	MATERIAL,
 	TEXTURE,
 	GRAY,
+	GRADIENT,
 	LAST
 };
 
@@ -176,9 +179,8 @@ class Mlx {
 		int _img_endian;
 		int _key_rot_x, _key_rot_y, _key_rot_z, _key_horizontal, _key_vertical, _key_zoom,
 			_key_color, _key_fill, _key_normal, _key_show_normals, _key_plane_enable,
-			_key_plane, _key_plane_side, _key_perpective_enable, _key_perspective,
+			_key_plane, _key_plane_side, _key_perpective_enable, _key_reset,
 			_key_shade;
-		double _extremum;
 		Scop *_scop;
 
 		void clear_img( void );
@@ -190,7 +192,7 @@ class Mlx {
 
 		int _size, _offset_x, _offset_y, _color_mode, _shade;
 		bool _fill, _use_normal, _show_normals, _plane_enable, _plane_side, _perspective_enable;
-		double _plane, _perspective;
+		double _plane;
 		t_vertex _dir;
 		std::vector<t_img *> _xpms;
 

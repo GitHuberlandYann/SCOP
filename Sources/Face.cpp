@@ -24,9 +24,9 @@ Face::~Face( void )
 //                                  Private                                   //
 // ************************************************************************** //
 
-void Face::fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c, bool texture, t_vertex ta, t_vertex tb, t_vertex tc )
+void Face::fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c, bool texture, t_vertex ta, t_vertex tb, t_vertex tc, t_vertex a3d, t_vertex b3d, t_vertex c3d )
 {
-	t_vertex deltta, delttc;
+	t_vertex deltta = {0, 0, 0}, delttc = {0, 0, 0}, delt3da = {0, 0, 0}, delt3dc = {0, 0, 0};
 
 	t_vertex starta = {a.x, a.y, 0};
 	t_vertex startc = {c.x, c.y, 0};
@@ -55,10 +55,17 @@ void Face::fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c, bool tex
 		deltta.y = (tb.y - ta.y) / len;
 		delttc.x = (tb.x - tc.x) / len;
 		delttc.y = (tb.y - tc.y) / len;
+	} else if (mlx->_color_mode == GRADIENT) {
+		delt3da.x = (b3d.x - a3d.x) / len;
+		delt3da.y = (b3d.y - a3d.y) / len;
+		delt3da.z = (b3d.z - a3d.z) / len;
+		delt3dc.x = (b3d.x - c3d.x) / len;
+		delt3dc.y = (b3d.y - c3d.y) / len;
+		delt3dc.z = (b3d.z - c3d.z) / len;
 	}
 
 	for (; len > 0; --len) {
-		draw_line(mlx, a, c, texture, ta, tc);
+		draw_line(mlx, a, c, texture, ta, tc, a3d, c3d);
 		a.x += delta.x;
 		if (delta.x)
 			a.y = delta.z * (a.x - starta.x) + starta.y;
@@ -74,6 +81,13 @@ void Face::fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c, bool tex
 			ta.y += deltta.y;
 			tc.x += delttc.x;
 			tc.y += delttc.y;
+		} else if (mlx->_color_mode == GRADIENT) {
+			a3d.x += delt3da.x;
+			a3d.y += delt3da.y;
+			a3d.z += delt3da.z;
+			c3d.x += delt3dc.x;
+			c3d.y += delt3dc.y;
+			c3d.z += delt3dc.z;
 		}
 	}
 }
@@ -81,44 +95,47 @@ void Face::fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c, bool tex
 void Face::fill_faces( Mlx *mlx )
 {
 	double z0 = 0, z1 = 0, z2 = 0;
+	t_vertex v0 = _vertices[0], v1, v2;
 
 	if (mlx->_plane_enable) {
-		z0 = mlx->rotation_z(_vertices[0]);
+		z0 = mlx->rotation_z(v0);
 		if (z0 * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
 			return ;
 		}
 	} else if (mlx->_perspective_enable) {
-		z0 =  mlx->rotation_z(_vertices[0]);
+		z0 =  mlx->rotation_z(v0);
 	}
 	
 	t_vertex f0, f1, f2, t0, t1, t2;
 	bool texture = (mlx->_color_mode == TEXTURE && !_vertices_textures.empty() && _texture_index && *_texture_index != std::string::npos);
-	f0.x = mlx->rotation_x(_vertices[0]) * mlx->_size * mlx->add_perspective(z0) + mlx->_offset_x;
-	f0.y = mlx->rotation_y(_vertices[0]) * mlx->_size * mlx->add_perspective(z0) + mlx->_offset_y;
+	f0.x = mlx->rotation_x(v0) * mlx->_size * mlx->add_perspective(z0) + mlx->_offset_x;
+	f0.y = mlx->rotation_y(v0) * mlx->_size * mlx->add_perspective(z0) + mlx->_offset_y;
 
 	if (texture) {
 		t0 = mlx->set_textvert(_vertices_textures[0], *_texture_index);
 	}
 	for (int index = 1; index < _size - 1; ++index) {
+		v1 = _vertices[index];
+		v2 = _vertices[index + 1];
 		if (mlx->_perspective_enable) {
-			z1 = mlx->rotation_z(_vertices[index]);
-			z2 = mlx->rotation_z(_vertices[index + 1]);
+			z1 = mlx->rotation_z(v1);
+			z2 = mlx->rotation_z(v2);
 		}
-		f1.x = mlx->rotation_x(_vertices[index]) * mlx->_size * mlx->add_perspective(z1) + mlx->_offset_x;
-		f1.y = mlx->rotation_y(_vertices[index]) * mlx->_size * mlx->add_perspective(z1) + mlx->_offset_y;
-		f2.x = mlx->rotation_x(_vertices[index + 1]) * mlx->_size * mlx->add_perspective(z2) + mlx->_offset_x;
-		f2.y = mlx->rotation_y(_vertices[index + 1]) * mlx->_size * mlx->add_perspective(z2) + mlx->_offset_y;
+		f1.x = mlx->rotation_x(v1) * mlx->_size * mlx->add_perspective(z1) + mlx->_offset_x;
+		f1.y = mlx->rotation_y(v1) * mlx->_size * mlx->add_perspective(z1) + mlx->_offset_y;
+		f2.x = mlx->rotation_x(v2) * mlx->_size * mlx->add_perspective(z2) + mlx->_offset_x;
+		f2.y = mlx->rotation_y(v2) * mlx->_size * mlx->add_perspective(z2) + mlx->_offset_y;
 		if (texture) {
 			t1 = mlx->set_textvert(_vertices_textures[index], *_texture_index);
 			t2 = mlx->set_textvert(_vertices_textures[index + 1], *_texture_index);
 		}
-		fill_triangle(mlx, f0, f1, f2, texture, t0, t1, t2);
+		fill_triangle(mlx, f0, f1, f2, texture, t0, t1, t2, v0, v1, v2);
 	}
 }
 
-void Face::draw_line( Mlx *mlx, t_vertex & a, t_vertex & b, bool texture, t_vertex ta, t_vertex tb )
+void Face::draw_line( Mlx *mlx, t_vertex & a, t_vertex & b, bool texture, t_vertex ta, t_vertex tb, t_vertex a3d, t_vertex b3d )
 {
-	t_vertex delta, pixel, deltt;
+	t_vertex delta, pixel, deltt = {0, 0, 0}, delt3d = {0, 0, 0};
 	double len;
 
 	delta.x = b.x - a.x;
@@ -133,6 +150,10 @@ void Face::draw_line( Mlx *mlx, t_vertex & a, t_vertex & b, bool texture, t_vert
 	if (texture) {
 		deltt.x = (tb.x - ta.x) / len;
 		deltt.y = (tb.y - ta.y) / len;
+	} else if (mlx->_color_mode == GRADIENT) {
+		delt3d.x = (b3d.x - a3d.x) / len;
+		delt3d.y = (b3d.y - a3d.y) / len;
+		delt3d.z = (b3d.z - a3d.z) / len;
 	}
 
 	while (len > 0)
@@ -147,6 +168,11 @@ void Face::draw_line( Mlx *mlx, t_vertex & a, t_vertex & b, bool texture, t_vert
 			ta.y += deltt.y;
 		} else if (mlx->_color_mode == GRAY) {
 			mlx->put_pixel(pixel.x, pixel.y, _grays[mlx->_shade]);
+		} else if (mlx->_color_mode == GRADIENT) {
+			mlx->put_pixel(pixel.x, pixel.y, get_gradient(a3d));
+			a3d.x += delt3d.x;
+			a3d.y += delt3d.y;
+			a3d.z += delt3d.z;
 		} else {
 			mlx->put_pixel(pixel.x, pixel.y, 0x950321);
 		}
@@ -162,27 +188,28 @@ void Face::draw_line( Mlx *mlx, t_vertex & a, t_vertex & b, bool texture, t_vert
 void Face::link_vertices( Mlx *mlx, int a, int b )
 {
 	double za = 0, zb = 0;
+	t_vertex va = _vertices[a], vb = _vertices[b];
 
 	if (mlx->_plane_enable) {
-		za = mlx->rotation_z(_vertices[a]);
+		za = mlx->rotation_z(va);
 		if (za * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
 			return ;
 		}
-		zb = mlx->rotation_z(_vertices[b]);
+		zb = mlx->rotation_z(vb);
 		if (zb * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
 			return ;
 		}
 	} else if (mlx->_perspective_enable) {
-		za = mlx->rotation_z(_vertices[a]);
-		zb = mlx->rotation_z(_vertices[b]);
+		za = mlx->rotation_z(va);
+		zb = mlx->rotation_z(vb);
 	}
 
 	t_vertex s, e;
-	s.x = mlx->rotation_x(_vertices[a]) * mlx->_size * mlx->add_perspective(za) + mlx->_offset_x;
-	s.y = mlx->rotation_y(_vertices[a]) * mlx->_size * mlx->add_perspective(za) + mlx->_offset_y;
-	e.x = mlx->rotation_x(_vertices[b]) * mlx->_size * mlx->add_perspective(zb) + mlx->_offset_x;
-	e.y = mlx->rotation_y(_vertices[b]) * mlx->_size * mlx->add_perspective(zb) + mlx->_offset_y;
-	draw_line(mlx, s, e, false, s, e);
+	s.x = mlx->rotation_x(va) * mlx->_size * mlx->add_perspective(za) + mlx->_offset_x;
+	s.y = mlx->rotation_y(va) * mlx->_size * mlx->add_perspective(za) + mlx->_offset_y;
+	e.x = mlx->rotation_x(vb) * mlx->_size * mlx->add_perspective(zb) + mlx->_offset_x;
+	e.y = mlx->rotation_y(vb) * mlx->_size * mlx->add_perspective(zb) + mlx->_offset_y;
+	draw_line(mlx, s, e, false, s, e, va, vb);
 }
 
 // void Face::display_dir( Mlx *mlx )
@@ -198,18 +225,21 @@ void Face::link_vertices( Mlx *mlx, int a, int b )
 
 void Face::link_normal( Mlx *mlx, int index )
 {
-	if (!mlx->_show_normals || _vertices_normals.empty()) {
+	if (!mlx->_show_normals || mlx->_perspective_enable || _vertices_normals.empty()) {
 		return ;
 	}
 
 	t_vertex s, e;
-	t_vertex n = {_vertices[index].x + _vertices_normals[index].x, _vertices[index].y + _vertices_normals[index].y, _vertices[index].z + _vertices_normals[index].z};
+	t_vertex vi = _vertices[index];
+	t_vertex n = {vi.x + _vertices_normals[index].x * 5,
+					vi.y + _vertices_normals[index].y * 5,
+					vi.z + _vertices_normals[index].z * 5};
 	
-	s.x = mlx->rotation_x(_vertices[index]) * mlx->_size + mlx->_offset_x;
-	s.y = mlx->rotation_y(_vertices[index]) * mlx->_size + mlx->_offset_y;
+	s.x = mlx->rotation_x(vi) * mlx->_size + mlx->_offset_x;
+	s.y = mlx->rotation_y(vi) * mlx->_size + mlx->_offset_y;
 	e.x = mlx->rotation_x(n) * mlx->_size + mlx->_offset_x;
 	e.y = mlx->rotation_y(n) * mlx->_size + mlx->_offset_y;
-	draw_line(mlx, s, e, false, s, e);
+	draw_line(mlx, s, e, false, s, e, vi, n);
 }
 
 // ************************************************************************** //
@@ -264,14 +294,14 @@ void Face::draw_face( Mlx *mlx )
 	// display_dir(mlx);
 }
 
-void Face::center_object( t_vertex central_axis )
+void Face::center_object( t_vertex central_axis, double normalizer )
 {
 	std::vector<t_vertex>::iterator it = _vertices.begin();
 	std::vector<t_vertex>::iterator ite = _vertices.end();
 
 	for (; it != ite; it++) {
-		(*it).x -= central_axis.x;
-		(*it).y -= central_axis.y;
-		(*it).z -= central_axis.z;
+		set_vertex(*it, (it->x - central_axis.x) * normalizer,
+						(it->y - central_axis.y) * normalizer,
+						(it->z - central_axis.z) * normalizer);
 	}
 }

@@ -33,6 +33,8 @@ class Scop {
 		t_vertex *get_normal( int num );
 		void add_materials( std::string file );
 		void set_material( std::string name );
+		
+		double get_extremum( void );
 
 	public:
 		Scop( std::string root );
@@ -44,7 +46,6 @@ class Scop {
 		void parse( std::string file );
 		void display_content( void );
 		void center_object( void );
-		double get_extramum( void );
 		void map_img( Mlx *mlx );
 };
 

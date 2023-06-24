@@ -33,8 +33,8 @@ int main( int ac, char **av )
 	Mlx *mlx = new Mlx(scop);
 	try {
 		scop->parse(file);
-		scop->display_content();
 		scop->center_object();
+		scop->display_content();
 		mlx->setup();
 	} catch (std::exception & e) {
 		std::cout << e.what() << std::endl;
