@@ -188,7 +188,6 @@ class Mlx {
 		int _text_y;
 
 		void clear_img( void );
-		// void set_dir( void );
 
 	public:
 		Mlx( Scop *scop );

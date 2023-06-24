@@ -1,0 +1,62 @@
+newmtl tower:CastleRender:Castle1:Castle1:tower:lambert6SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd door51L.xpm
+bump  -bm 1 door51Lb.jpg
+Ni 1.00
+newmtl tower:CastleRender:Castle1:castle:building:blinn10SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 1.00 1.00 1.00
+newmtl tower:CastleRender:Castle1:castle:building:lambert7SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd flag.xpm
+Ni 1.00
+newmtl tower:CastleRender:Castle1:castle:building:lambert15SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd wood05.xpm
+bump  -bm 1 -mm_0_0.731405_wood05.jpg
+Ni 1.00
+newmtl tower:CastleRender:towerRender:towerRender:belem:belemRender2:lambert4SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd germany010.xpm
+bump  -bm 1 -s_0.5_0.5_germany010b.jpg
+Ni 1.00
+newmtl tower:CastleRender:towerRender:towerRender:belem:belemRender2:lambert5SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd pared2.xpm
+bump  -bm 1 pared2bump.jpg
+Ni 1.00
+newmtl tower:CastleRender:towerRender:towerRender:belem:belemRender2:lambert6SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd wndw038M.xpm
+bump  -bm 44 wndw038M.jpg
+Ni 1.00
+newmtl tower:CastleRender:towerRender:towerRender:belem:belemRender2:lambert8SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd sweden008.xpm
+bump  -bm 1 sweden008b.jpg
+Ni 1.00
