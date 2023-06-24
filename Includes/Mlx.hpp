@@ -16,6 +16,7 @@ extern "C" {
 # endif
 
 # define EXTREMUM 50.0
+# define DEPTH -1000.0
 
 enum {	//events supported on mac (only a fraction of what can be found on x11)
 	ON_KEYDOWN = 2,
@@ -180,8 +181,9 @@ class Mlx {
 		int _key_rot_x, _key_rot_y, _key_rot_z, _key_horizontal, _key_vertical, _key_zoom,
 			_key_color, _key_fill, _key_normal, _key_show_normals, _key_plane_enable,
 			_key_plane, _key_plane_side, _key_perpective_enable, _key_reset,
-			_key_shade;
+			_key_shade, _key_depth_enable;
 		Scop *_scop;
+		std::array<double, WIN_SIZE_X * WIN_SIZE_Y> _depth;
 
 		void clear_img( void );
 		// void set_dir( void );
@@ -191,13 +193,13 @@ class Mlx {
 		~Mlx( void );
 
 		int _size, _offset_x, _offset_y, _color_mode, _shade;
-		bool _fill, _use_normal, _show_normals, _plane_enable, _plane_side, _perspective_enable;
+		bool _fill, _use_normal, _show_normals, _plane_enable, _plane_side, _perspective_enable, _depth_enable;
 		double _plane;
 		t_vertex _dir;
 		std::vector<t_img *> _xpms;
 
 		void setup( void );
-		void put_pixel( int x, int y, unsigned int color );
+		void put_pixel( int x, int y, unsigned int color, double depth );
 		unsigned int get_pixel( size_t texture_index, int x, int y );
 		t_vertex set_textvert( t_vertex base_vertex, size_t texture_index );
 		double rotation_x( t_vertex vertex );

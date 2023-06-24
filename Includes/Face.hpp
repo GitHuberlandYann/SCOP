@@ -16,9 +16,9 @@ class Face {
 		unsigned int _grays[4];
 		size_t *_texture_index;
 
-		void fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c, bool texture, t_vertex ta, t_vertex tb, t_vertex tc, t_vertex a3d, t_vertex b3d, t_vertex c3d );
+		void fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c, bool texture, t_vertex ta, t_vertex tb, t_vertex tc, t_vertex a3d, t_vertex b3d, t_vertex c3d, double za, double zb, double zc );
 		void fill_faces( Mlx *mlx );
-		void draw_line( Mlx *mlx, t_vertex & a, t_vertex & b, bool texture, t_vertex ta, t_vertex tb, t_vertex a3d, t_vertex b3d );
+		void draw_line( Mlx *mlx, t_vertex & a, t_vertex & b, bool texture, t_vertex ta, t_vertex tb, t_vertex a3d, t_vertex b3d, double za, double zb );
 		void link_vertices( Mlx *mlx, int a, int b );
 		// void display_dir( Mlx *mlx );
 		void link_normal( Mlx *mlx, int index );

@@ -3,10 +3,10 @@
 Mlx::Mlx( Scop *scop ) : _key_rot_x(0), _key_rot_y(0), _key_rot_z(0), _key_horizontal(0), _key_vertical(0),
 		_key_zoom(0), _key_color(0), _key_fill(0), _key_normal(0), _key_show_normals(0),
 		_key_plane_enable(0), _key_plane(0), _key_plane_side(0),
-		_key_perpective_enable(0), _key_reset(0), _key_shade(0),
+		_key_perpective_enable(0), _key_reset(0), _key_shade(0), _key_depth_enable(0),
 		_scop(scop), _size(5), _offset_x(WIN_SIZE_X / 2), _offset_y(WIN_SIZE_Y / 2),
 		_color_mode(DEFAULT), _shade(S_WHITE), _fill(false), _use_normal(false), _show_normals(false),
-		_plane_enable(false), _plane_side(false), _perspective_enable(false),
+		_plane_enable(false), _plane_side(false), _perspective_enable(false), _depth_enable(false),
 		_plane(0)
 {
 	std::cout << "Constructor of Mlx called" << std::endl;
@@ -51,7 +51,7 @@ void Mlx::clear_img( void )
 {
 	for (int x = 0; x < WIN_SIZE_X; x++) {
 		for (int y = 0; y < WIN_SIZE_Y; y++) {
-			put_pixel(x, y, 0x0);
+			put_pixel(x, y, 0x0, DEPTH + 1);
 		}
 	}
 }
@@ -126,12 +126,17 @@ void Mlx::setup( void ) {
 	mlx_loop(_mlx_ptr);
 }
 
-void Mlx::put_pixel( int x, int y, unsigned int color )
+void Mlx::put_pixel( int x, int y, unsigned int color, double depth )
 {
 	char *dst;
 
 	if (y < 0 || y >= WIN_SIZE_Y || x < 0 || x >= WIN_SIZE_X) {
 		return ;
+	}
+	if (_depth_enable) {
+		if (_depth[y * WIN_SIZE_X + x] > depth)
+			return ;
+		_depth[y * WIN_SIZE_X + x] = depth;
 	}
 	dst = _img_addr + (y * _img_line_length + x * (_img_bits_per_pixel / 8));
 	*(unsigned int *) dst = color;
@@ -229,6 +234,8 @@ void Mlx::key_down( int kcode )
 		_fill = !_fill;
 	else if (kcode == KEY_V && ++_key_normal == 1)
 		_use_normal = !_use_normal;
+	else if (kcode == KEY_B && ++_key_depth_enable == 1)
+		_depth_enable = !_depth_enable;
 	else if (kcode == KEY_N && ++_key_show_normals == 1)
 		_show_normals = !_show_normals;
 	else if (kcode == KEY_O && ++_key_reset == 1) {
@@ -246,6 +253,7 @@ void Mlx::key_down( int kcode )
 		_plane_enable = false;
 		_plane_side = false;
 		_perspective_enable = false;
+		_depth_enable = false;
 		_plane = 0;
 	} else if (kcode == KEY_P && ++_key_perpective_enable == 1)
 		_perspective_enable = !_perspective_enable;
@@ -281,6 +289,8 @@ void Mlx::key_released( int kcode )
 		_key_normal = 0;
 	else if (kcode == KEY_N)
 		_key_show_normals = 0;
+	else if (kcode == KEY_B)
+		_key_depth_enable = 0;
 	else if (kcode == KEY_O)
 		_key_reset = 0;
 	else if (kcode == KEY_P)
@@ -321,6 +331,9 @@ void Mlx::draw( void )
 	_plane += _key_plane * 0.5;
 
 	clear_img();
+	if (_depth_enable) {
+		_depth.fill(DEPTH);
+	}
 	_scop->map_img(this);
 	// put_pixel(WIN_SIZE_X / 2, WIN_SIZE_Y /2, 0xff0000);
 	mlx_put_image_to_window(_mlx_ptr, _win_ptr, _img_ptr, 0, 0);

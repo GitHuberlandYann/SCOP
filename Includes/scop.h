@@ -6,6 +6,7 @@
 # include <string>
 # include <fstream>
 # include <vector>
+# include <array>
 # include <random>
 
 typedef struct s_vertex {
