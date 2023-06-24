@@ -49,11 +49,14 @@ Mlx::~Mlx( void )
 
 void Mlx::clear_img( void )
 {
+	bool saved_depth_enable = _depth_enable;
+	_depth_enable = false;
 	for (int x = 0; x < WIN_SIZE_X; x++) {
 		for (int y = 0; y < WIN_SIZE_Y; y++) {
-			put_pixel(x, y, 0x0, DEPTH + 1);
+			put_pixel(x, y, 0x0, 0);
 		}
 	}
+	_depth_enable = saved_depth_enable;
 }
 
 // void Mlx::set_dir( void )
@@ -142,6 +145,15 @@ void Mlx::put_pixel( int x, int y, unsigned int color, double depth )
 	*(unsigned int *) dst = color;
 }
 
+void Mlx::put_text( std::string str )
+{
+	if (_text_y > WIN_SIZE_Y - 16) {
+		return ;
+	}
+	char *string_to_put = &str[0];
+	mlx_string_put(_mlx_ptr, _win_ptr, TEXT_RIGHT, _text_y, 0xffffff, string_to_put);
+	_text_y += 16;
+}
 
 unsigned int Mlx::get_pixel( size_t texture_index, int x, int y )
 {
@@ -329,6 +341,7 @@ void Mlx::draw( void )
 		_size += _key_zoom;
 	}
 	_plane += _key_plane * 0.5;
+	_text_y = 16;
 
 	clear_img();
 	if (_depth_enable) {

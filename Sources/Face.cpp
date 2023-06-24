@@ -31,9 +31,9 @@ void Face::fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c, bool tex
 	t_vertex starta = {a.x, a.y, 0};
 	t_vertex startc = {c.x, c.y, 0};
 
-	t_vertex delta = {b.x - a.x, b.y - a.y, 0};
+	t_vertex delta = {fsubstract(b.x, a.x), fsubstract(b.y, a.y), 0};
 	delta.z = delta.y / delta.x;
-	t_vertex deltc = {b.x - c.x, b.y - c.y, 0};
+	t_vertex deltc = {fsubstract(b.x, c.x), fsubstract(b.y, c.y), 0};
 	deltc.z = deltc.y / deltc.x;
 	
 	double len, deltza = 0, deltzc = 0;
@@ -51,21 +51,21 @@ void Face::fill_triangle( Mlx *mlx, t_vertex a, t_vertex b, t_vertex c, bool tex
 	deltc.y /= len;
 
 	if (texture) {
-		deltta.x = (tb.x - ta.x) / len;
-		deltta.y = (tb.y - ta.y) / len;
-		delttc.x = (tb.x - tc.x) / len;
-		delttc.y = (tb.y - tc.y) / len;
+		deltta.x = fsubstract(tb.x, ta.x) / len;
+		deltta.y = fsubstract(tb.y, ta.y) / len;
+		delttc.x = fsubstract(tb.x, tc.x) / len;
+		delttc.y = fsubstract(tb.y, tc.y) / len;
 	} else if (mlx->_color_mode == GRADIENT) {
-		delt3da.x = (b3d.x - a3d.x) / len;
-		delt3da.y = (b3d.y - a3d.y) / len;
-		delt3da.z = (b3d.z - a3d.z) / len;
-		delt3dc.x = (b3d.x - c3d.x) / len;
-		delt3dc.y = (b3d.y - c3d.y) / len;
-		delt3dc.z = (b3d.z - c3d.z) / len;
+		delt3da.x = fsubstract(b3d.x, a3d.x) / len;
+		delt3da.y = fsubstract(b3d.y, a3d.y) / len;
+		delt3da.z = fsubstract(b3d.z, a3d.z) / len;
+		delt3dc.x = fsubstract(b3d.x, c3d.x) / len;
+		delt3dc.y = fsubstract(b3d.y, c3d.y) / len;
+		delt3dc.z = fsubstract(b3d.z, c3d.z) / len;
 	}
 	if (mlx->_depth_enable) {
-		deltza = (zb - za) / len;
-		deltzc = (zb - zc) / len;
+		deltza = fsubstract(zb, za) / len;
+		deltzc = fsubstract(zb, zc) / len;
 	}
 
 	for (; len > 0; --len) {
@@ -146,13 +146,13 @@ void Face::fill_faces( Mlx *mlx )
 	}
 }
 
-void Face::draw_line( Mlx *mlx, t_vertex & a, t_vertex & b, bool texture, t_vertex ta, t_vertex tb, t_vertex a3d, t_vertex b3d, double za, double zb )
+void Face::draw_line( Mlx *mlx, t_vertex a, t_vertex b, bool texture, t_vertex ta, t_vertex tb, t_vertex a3d, t_vertex b3d, double za, double zb )
 {
 	t_vertex delta, pixel, deltt = {0, 0, 0}, delt3d = {0, 0, 0};
 	double len, deltz = 0;
 
-	delta.x = b.x - a.x;
-	delta.y = b.y - a.y;
+	delta.x = fsubstract(b.x, a.x);
+	delta.y = fsubstract(b.y, a.y);
 	delta.z = delta.y / delta.x;
 	len = sqrt(delta.x * delta.x + delta.y * delta.y);
 	delta.x /= len;
@@ -161,15 +161,15 @@ void Face::draw_line( Mlx *mlx, t_vertex & a, t_vertex & b, bool texture, t_vert
 	pixel.y = a.y;
 
 	if (texture) {
-		deltt.x = (tb.x - ta.x) / len;
-		deltt.y = (tb.y - ta.y) / len;
+		deltt.x = fsubstract(tb.x, ta.x) / len;
+		deltt.y = fsubstract(tb.y, ta.y) / len;
 	} else if (mlx->_color_mode == GRADIENT) {
-		delt3d.x = (b3d.x - a3d.x) / len;
-		delt3d.y = (b3d.y - a3d.y) / len;
-		delt3d.z = (b3d.z - a3d.z) / len;
+		delt3d.x = fsubstract(b3d.x, a3d.x) / len;
+		delt3d.y = fsubstract(b3d.y, a3d.y) / len;
+		delt3d.z = fsubstract(b3d.z, a3d.z) / len;
 	}
 	if (mlx->_depth_enable) {
-		deltz = (zb - za) / len;
+		deltz = fsubstract(zb, za) / len;
 	}
 
 	while (len > 0)

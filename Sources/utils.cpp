@@ -145,3 +145,11 @@ unsigned int get_gradient( t_vertex v )
 	set_rgb(res, v.x, v.y, v.z);
 	return (res);
 }
+
+double fsubstract( double a, double b )
+{
+	if (fabs(a - b) < 0.00000001) {
+		return (0);
+	}
+	return (a - b);
+}

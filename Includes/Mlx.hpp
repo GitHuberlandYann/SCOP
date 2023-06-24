@@ -17,6 +17,7 @@ extern "C" {
 
 # define EXTREMUM 50.0
 # define DEPTH -1000.0
+# define TEXT_RIGHT (WIN_SIZE_X - 300)
 
 enum {	//events supported on mac (only a fraction of what can be found on x11)
 	ON_KEYDOWN = 2,
@@ -184,6 +185,7 @@ class Mlx {
 			_key_shade, _key_depth_enable;
 		Scop *_scop;
 		std::array<double, WIN_SIZE_X * WIN_SIZE_Y> _depth;
+		int _text_y;
 
 		void clear_img( void );
 		// void set_dir( void );
@@ -200,6 +202,7 @@ class Mlx {
 
 		void setup( void );
 		void put_pixel( int x, int y, unsigned int color, double depth );
+		void put_text( std::string str );
 		unsigned int get_pixel( size_t texture_index, int x, int y );
 		t_vertex set_textvert( t_vertex base_vertex, size_t texture_index );
 		double rotation_x( t_vertex vertex );

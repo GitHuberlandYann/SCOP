@@ -11,5 +11,14 @@ int event_mlx_draw( void *param );
 void set_vertex( t_vertex & vertex, double x, double y, double z );
 void set_rgb( unsigned int & color, int r, int g, int b );
 unsigned int get_gradient( t_vertex v );
+double fsubstract( double a, double b );
+
+template<typename T>
+std::string toString(const T& value)
+{
+    std::ostringstream oss;
+    oss << value;
+    return oss.str();
+}
 
 #endif
