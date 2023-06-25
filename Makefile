@@ -26,7 +26,7 @@ endif
 
 CC = c++
 CPPFLAGS = -Wall -Wextra -Werror -O3
-SAN = -fsanitize=address -g
+SAN = #-fsanitize=address -g
 MATH = -lm
 
 # ===---===---===---===---===---===---===---===---===---===---===---===---
@@ -37,7 +37,7 @@ $(OBJS_DIR):
 	@mkdir -p $(OBJS_DIR)
 
 $(NAME): $(OBJS) $(MLX_PATH)
-	$(CC) $(SAN) $(OBJS) -o $(NAME) $(MLX) $(MATH)
+	$(CC) $(CPPFLAGS) $(SAN) $(OBJS) -o $(NAME) $(MLX) $(MATH)
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 	$(CC) $(CPPFLAGS) $(SAN) $(INCLUDES) -c $< -o $@

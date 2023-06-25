@@ -98,6 +98,7 @@ void Scop::center_object( void )
 
 	for (; it != ite; it++) {
 		(*it)->center_object(central_axis, EXTREMUM / get_extremum());
+		(*it)->set_face_normal();
 	}
 }
 

@@ -161,6 +161,13 @@ enum shades {
 	S_LAST
 };
 
+enum normals {
+	N_FALSE,
+	N_POINTS,
+	N_FACES,
+	N_LAST
+};
+
 typedef struct s_img {
 	void	*img_ptr;
 	char	*addr;
@@ -193,8 +200,8 @@ class Mlx {
 		Mlx( Scop *scop );
 		~Mlx( void );
 
-		int _size, _offset_x, _offset_y, _color_mode, _shade;
-		bool _fill, _use_normal, _show_normals, _plane_enable, _plane_side, _perspective_enable, _depth_enable;
+		int _size, _offset_x, _offset_y, _color_mode, _shade, _show_normals;
+		bool _fill, _use_normal, _plane_enable, _plane_side, _perspective_enable, _depth_enable;
 		double _plane;
 		t_vertex _dir;
 		std::vector<t_img *> _xpms;
@@ -202,7 +209,7 @@ class Mlx {
 		void setup( void );
 		void put_pixel( int x, int y, unsigned int color, double depth );
 		void put_text( std::string str );
-		unsigned int get_pixel( size_t texture_index, int x, int y );
+		unsigned int get_texture( size_t texture_index, int x, int y );
 		t_vertex set_textvert( t_vertex base_vertex, size_t texture_index );
 		double rotation_x( t_vertex vertex );
 		double rotation_y( t_vertex vertex );

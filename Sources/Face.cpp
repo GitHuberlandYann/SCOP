@@ -110,9 +110,7 @@ void Face::fill_faces( Mlx *mlx )
 		if (z0 * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
 			return ;
 		}
-	} else if (mlx->_perspective_enable) {
-		z0 =  mlx->rotation_z(v0);
-	} else if (mlx->_depth_enable) {
+	} else if (mlx->_perspective_enable || mlx->_depth_enable) {
 		z0 =  mlx->rotation_z(v0);
 	}
 	
@@ -127,10 +125,7 @@ void Face::fill_faces( Mlx *mlx )
 	for (int index = 1; index < _size - 1; ++index) {
 		v1 = _vertices[index];
 		v2 = _vertices[index + 1];
-		if (mlx->_perspective_enable) {
-			z1 = mlx->rotation_z(v1);
-			z2 = mlx->rotation_z(v2);
-		} else if (mlx->_depth_enable) {
+		if (mlx->_perspective_enable || mlx->_depth_enable) {
 			z1 = mlx->rotation_z(v1);
 			z2 = mlx->rotation_z(v2);
 		}
@@ -179,7 +174,7 @@ void Face::draw_line( Mlx *mlx, t_vertex a, t_vertex b, bool texture, t_vertex t
 		} else if (mlx->_color_mode == MATERIAL) {
 			mlx->put_pixel(pixel.x, pixel.y, _color, za);
 		} else if (texture) {
-			mlx->put_pixel(pixel.x, pixel.y, mlx->get_pixel(*_texture_index, ta.x, ta.y), za);
+			mlx->put_pixel(pixel.x, pixel.y, mlx->get_texture(*_texture_index, ta.x, ta.y), za);
 			ta.x += deltt.x;
 			ta.y += deltt.y;
 		} else if (mlx->_color_mode == GRAY) {
@@ -218,10 +213,7 @@ void Face::link_vertices( Mlx *mlx, int a, int b )
 		if (zb * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
 			return ;
 		}
-	} else if (mlx->_perspective_enable) {
-		za = mlx->rotation_z(va);
-		zb = mlx->rotation_z(vb);
-	} else if (mlx->_depth_enable) {
+	} else if (mlx->_perspective_enable || mlx->_depth_enable) {
 		za = mlx->rotation_z(va);
 		zb = mlx->rotation_z(vb);
 	}
@@ -245,9 +237,37 @@ void Face::link_vertices( Mlx *mlx, int a, int b )
 // 	draw_line(mlx, s, e);
 // }
 
+void Face::link_face_normal( Mlx *mlx )
+{
+	t_vertex s, e, norm;
+	
+	set_vertex(norm, _face_center.x + _face_normal.x, _face_center.y + _face_normal.y, _face_center.z + _face_normal.z);
+
+	double zs = 0, ze = 0;
+	if (mlx->_plane_enable) {
+		zs = mlx->rotation_z(_face_center);
+		if (zs * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
+			return ;
+		}
+		ze = mlx->rotation_z(norm);
+		if (ze * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
+			return ;
+		}
+	} else if (mlx->_depth_enable) {
+		zs = mlx->rotation_z(_face_center);
+		ze = mlx->rotation_z(norm);
+	}
+	
+	s.x = mlx->rotation_x(_face_center) * mlx->_size + mlx->_offset_x;
+	s.y = mlx->rotation_y(_face_center) * mlx->_size + mlx->_offset_y;
+	e.x = mlx->rotation_x(norm) * mlx->_size + mlx->_offset_x;
+	e.y = mlx->rotation_y(norm) * mlx->_size + mlx->_offset_y;
+	draw_line(mlx, s, e, false, s, e, _face_center, norm, zs, ze);
+}
+
 void Face::link_normal( Mlx *mlx, int index )
 {
-	if (!mlx->_show_normals || mlx->_perspective_enable || _vertices_normals.empty()) {
+	if (mlx->_show_normals != N_POINTS || mlx->_perspective_enable || _vertices_normals.empty()) {
 		return ;
 	}
 
@@ -258,7 +278,16 @@ void Face::link_normal( Mlx *mlx, int index )
 					vi.z + _vertices_normals[index].z * 5};
 	
 	double zs = 0, ze = 0;
-	if (mlx->_depth_enable) {
+	if (mlx->_plane_enable) {
+		zs = mlx->rotation_z(vi);
+		if (zs * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
+			return ;
+		}
+		ze = mlx->rotation_z(n);
+		if (ze * (1 - 2 * mlx->_plane_side) < mlx->_plane * (1 - 2 * mlx->_plane_side)) {
+			return ;
+		}
+	} else if (mlx->_depth_enable) {
 		zs = mlx->rotation_z(vi);
 		ze = mlx->rotation_z(n);
 	}
@@ -288,6 +317,30 @@ void Face::add_vertex( t_vertex *vertex, t_vertex *texture, t_vertex *normal )
 	++_size;
 }
 
+/* use vn (if given) of points of face to compute one normal to the face */
+void Face::set_face_normal( void )
+{
+	set_vertex(_face_normal, 0, 0, 0);
+	set_vertex(_face_center, 0, 0, 0);
+	if (_vertices_normals.empty()) {
+		return ;
+	}
+	for (int index = 0; index < _size; index++) {
+		_face_normal.x += _vertices_normals[index].x * 5;
+		_face_normal.y += _vertices_normals[index].y * 5;
+		_face_normal.z += _vertices_normals[index].z * 5;
+		_face_center.x += _vertices[index].x;
+		_face_center.y += _vertices[index].y;
+		_face_center.z += _vertices[index].z;
+	}
+	_face_normal.x /= _size;
+	_face_normal.y /= _size;
+	_face_normal.z /= _size;
+	_face_center.x /= _size;
+	_face_center.y /= _size;
+	_face_center.z /= _size;
+}
+
 size_t Face::get_size( void )
 {
 	return (_size);
@@ -298,14 +351,12 @@ void Face::draw_face( Mlx *mlx )
 	double scalar;
 	t_vertex norm;
 	if (mlx->_use_normal && !_vertices_normals.empty()) {
-		for (int index = 0; index < _size; index++) {
-			norm.x = mlx->rotation_x(_vertices_normals[index]);
-			norm.y = mlx->rotation_y(_vertices_normals[index]);
-			norm.z = mlx->rotation_z(_vertices_normals[index]);
-			scalar = mlx->_dir.x * norm.x + mlx->_dir.y * norm.y + mlx->_dir.z * norm.z;
-			if (scalar < 0) {
-				return ;
-			}
+		norm.x = mlx->rotation_x(_face_normal);
+		norm.y = mlx->rotation_y(_face_normal);
+		norm.z = mlx->rotation_z(_face_normal);
+		scalar = mlx->_dir.x * norm.x + mlx->_dir.y * norm.y + mlx->_dir.z * norm.z;
+		if (scalar > 0) {
+			return ;
 		}
 	}
 
@@ -318,6 +369,10 @@ void Face::draw_face( Mlx *mlx )
 	}
 	link_vertices(mlx, 0, _size - 1);
 	link_normal(mlx, _size - 1);
+
+	if (mlx->_show_normals == N_FACES && !mlx->_perspective_enable && !_vertices_normals.empty()) {
+		link_face_normal(mlx);
+	}
 
 	// display_dir(mlx);
 }

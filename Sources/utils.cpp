@@ -86,6 +86,7 @@ t_vertex parse_vertex( std::string line, size_t index, bool texture )
 		while (new_vertex.y > 1) {
 			--new_vertex.y;
 		}
+		new_vertex.y = 1 - new_vertex.y; //all textures are upside down if I don't do this
 		return (new_vertex);
 	}
 	if (line[index] != ' ') {

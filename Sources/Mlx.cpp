@@ -6,7 +6,7 @@ Mlx::Mlx( Scop *scop ) : _mlx_ptr(NULL), _win_ptr(NULL), _img_ptr(NULL),
 		_key_plane_enable(0), _key_plane(0), _key_plane_side(0),
 		_key_perpective_enable(0), _key_reset(0), _key_shade(0), _key_depth_enable(0),
 		_scop(scop), _size(5), _offset_x(WIN_SIZE_X / 2), _offset_y(WIN_SIZE_Y / 2),
-		_color_mode(DEFAULT), _shade(S_WHITE), _fill(false), _use_normal(false), _show_normals(false),
+		_color_mode(DEFAULT), _shade(S_WHITE), _show_normals(N_FALSE), _fill(false), _use_normal(false),
 		_plane_enable(false), _plane_side(false), _perspective_enable(false), _depth_enable(false),
 		_plane(0)
 {
@@ -144,7 +144,7 @@ void Mlx::put_text( std::string str )
 	_text_y += 16;
 }
 
-unsigned int Mlx::get_pixel( size_t texture_index, int x, int y )
+unsigned int Mlx::get_texture( size_t texture_index, int x, int y )
 {
 	char	*dst;
 	int		limit_x;
@@ -162,7 +162,6 @@ unsigned int Mlx::get_pixel( size_t texture_index, int x, int y )
 t_vertex Mlx::set_textvert( t_vertex base_vertex, size_t texture_index )
 {
 	base_vertex.x *= _xpms[texture_index]->width;
-	base_vertex.y = 1 - base_vertex.y; //don't know why but I have to do this ..
 	base_vertex.y *= _xpms[texture_index]->height;
 	return (base_vertex);
 }
@@ -235,8 +234,11 @@ void Mlx::key_down( int kcode )
 		_use_normal = !_use_normal;
 	else if (kcode == KEY_B && ++_key_depth_enable == 1)
 		_depth_enable = !_depth_enable;
-	else if (kcode == KEY_N && ++_key_show_normals == 1)
-		_show_normals = !_show_normals;
+	else if (kcode == KEY_N && ++_key_show_normals == 1) {
+		++_show_normals;
+		if (_show_normals == N_LAST)
+			_show_normals = N_FALSE;
+	}
 	else if (kcode == KEY_O && ++_key_reset == 1) {
 		_size = 5;
 		_offset_x = WIN_SIZE_X / 2;

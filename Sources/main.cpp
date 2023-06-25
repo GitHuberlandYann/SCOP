@@ -3,7 +3,7 @@
 static std::string get_file( int ac, char **av )
 {
 	if (ac == 1) {
-		return ("Ressources/planet.obj");
+		return ("Resources/planet.obj");
 	} else if (ac == 2) {
 		std::string res(av[1]);
 
@@ -40,7 +40,7 @@ int main( int ac, char **av )
 		std::cout << e.what() << std::endl;
 		delete mlx;
 		delete scop;
-		exit(1); //remove this to see leaks when quit
+		return (1);
 	}
 	delete scop;
 	return (0);
