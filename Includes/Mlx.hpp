@@ -195,6 +195,7 @@ class Mlx {
 		int _text_y;
 
 		void clear_img( void );
+		int check_duplicate_xpm( std::vector<Material *>::iterator it, std::vector<Material *>::iterator ite );
 
 	public:
 		Mlx( Scop *scop );

@@ -60,6 +60,18 @@ void Mlx::clear_img( void )
 	_depth_enable = saved_depth_enable;
 }
 
+int Mlx::check_duplicate_xpm( std::vector<Material *>::iterator it, std::vector<Material *>::iterator ite )
+{
+	std::string current_xpm = (*ite)->get_xpm();
+	for (; it != ite; it++) {
+		if (!current_xpm.compare((*it)->get_xpm())) {
+			(*ite)->set_texture_index(*(*it)->get_texture_index());
+			return (0);
+		}
+	}
+	return (1);
+}
+
 // ************************************************************************** //
 //                                  Public                                    //
 // ************************************************************************** //
@@ -86,9 +98,12 @@ void Mlx::setup( void ) {
 	std::vector<Material *>::iterator it = _scop->_materials.begin();
 	std::vector<Material *>::iterator ite = _scop->_materials.end();
 
-	size_t cnt = 0;
+	size_t cnt = 0, dup_cnt = 0;;
 	for (; it != ite; it++) {
 		if ((*it)->get_xpm().empty()) {
+			continue ;
+		} else if (!check_duplicate_xpm(_scop->_materials.begin(), it)) {
+			++dup_cnt;
 			continue ;
 		}
 		t_img *nimg = new t_img;
@@ -106,7 +121,9 @@ void Mlx::setup( void ) {
 		(*it)->set_texture_index(cnt);
 		++cnt;
 	}
-	std::cout << " ---- number of xpms: " << cnt << " ----" << std::endl << std::endl;
+	(!dup_cnt)
+		? std::cout << " ---- number of xpms: " << cnt << " ----" << std::endl << std::endl
+		: std::cout << " ---- number of xpms: " << cnt + dup_cnt << " -> " << cnt << " ----" << std::endl << std::endl;
 
 	_scop->map_img(this);
 	mlx_put_image_to_window(_mlx_ptr, _win_ptr, _img_ptr, 0, 0);
