@@ -54,4 +54,10 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+march:
+	make -C Marching_Cubes
+	mv Marching_Cubes/march .
+	./march
+	./scop march.obj
+
+.PHONY: all clean fclean re march
