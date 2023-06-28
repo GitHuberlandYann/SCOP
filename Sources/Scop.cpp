@@ -5,6 +5,57 @@ Scop::Scop( std::string root ) : _face_mode(UNSET), _current_used_material(NULL)
 	std::cout << "Constructor of Scop called" << std::endl;
 	set_vertex(_max_box, -10000, -10000, -10000);
 	set_vertex(_min_box, 10000, 10000, 10000);
+
+	t_vertex box0 = {-50, -50, -50};
+	t_vertex box1 = {-50, 50, -50};
+	t_vertex box2 = {50, 50, -50};
+	t_vertex box3 = {50, -50, -50};
+	t_vertex box4 = {-50, -50, 50};
+	t_vertex box5 = {-50, 50, 50};
+	t_vertex box6 = {50, 50, 50};
+	t_vertex box7 = {50, -50, 50};
+
+	Face *new_face = new Face(NULL, 0);
+	_box.push_back(new_face);
+	new_face->add_vertex(&box0, NULL, NULL);
+	new_face->add_vertex(&box1, NULL, NULL);
+	new_face->add_vertex(&box2, NULL, NULL);
+	new_face->add_vertex(&box3, NULL, NULL);
+
+	new_face = new Face(NULL, 0);
+	_box.push_back(new_face);
+	new_face->add_vertex(&box4, NULL, NULL);
+	new_face->add_vertex(&box5, NULL, NULL);
+	new_face->add_vertex(&box6, NULL, NULL);
+	new_face->add_vertex(&box7, NULL, NULL);
+
+	new_face = new Face(NULL, 0);
+	_box.push_back(new_face);
+	new_face->add_vertex(&box0, NULL, NULL);
+	new_face->add_vertex(&box1, NULL, NULL);
+	new_face->add_vertex(&box5, NULL, NULL);
+	new_face->add_vertex(&box4, NULL, NULL);
+
+	new_face = new Face(NULL, 0);
+	_box.push_back(new_face);
+	new_face->add_vertex(&box1, NULL, NULL);
+	new_face->add_vertex(&box2, NULL, NULL);
+	new_face->add_vertex(&box6, NULL, NULL);
+	new_face->add_vertex(&box5, NULL, NULL);
+
+	new_face = new Face(NULL, 0);
+	_box.push_back(new_face);
+	new_face->add_vertex(&box2, NULL, NULL);
+	new_face->add_vertex(&box3, NULL, NULL);
+	new_face->add_vertex(&box7, NULL, NULL);
+	new_face->add_vertex(&box6, NULL, NULL);
+
+	new_face = new Face(NULL, 0);
+	_box.push_back(new_face);
+	new_face->add_vertex(&box0, NULL, NULL);
+	new_face->add_vertex(&box3, NULL, NULL);
+	new_face->add_vertex(&box7, NULL, NULL);
+	new_face->add_vertex(&box4, NULL, NULL);
 }
 
 Scop::~Scop( void )
@@ -22,6 +73,14 @@ Scop::~Scop( void )
 		delete *it;
 	}
 	_faces.clear();
+
+	std::vector<Face *>::iterator itb = _box.begin();
+	std::vector<Face *>::iterator iteb = _box.end();
+	
+	for (; itb != iteb; itb++) {
+		delete *itb;
+	}
+	_box.clear();
 
 	std::vector<Material *>::iterator mit = _materials.begin();
 	std::vector<Material *>::iterator mite = _materials.end();
@@ -106,6 +165,16 @@ void Scop::map_img( Mlx *mlx )
 {
 	std::vector<Face *>::iterator it = _faces.begin();
 	std::vector<Face *>::iterator ite = _faces.end();
+
+	for (; it != ite; it++) {
+		(*it)->draw_face(mlx);
+	}
+}
+
+void Scop::map_box( Mlx *mlx )
+{
+	std::vector<Face *>::iterator it = _box.begin();
+	std::vector<Face *>::iterator ite = _box.end();
 
 	for (; it != ite; it++) {
 		(*it)->draw_face(mlx);

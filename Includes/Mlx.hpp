@@ -189,7 +189,8 @@ class Mlx {
 		int _key_rot_x, _key_rot_y, _key_rot_z, _key_horizontal, _key_vertical, _key_zoom,
 			_key_color, _key_fill, _key_normal, _key_show_normals, _key_plane_enable,
 			_key_plane, _key_plane_side, _key_perpective_enable, _key_reset,
-			_key_shade, _key_depth_enable;
+			_key_shade, _key_depth_enable, _key_show_box;
+		bool _show_box;
 		Scop *_scop;
 		std::array<double, WIN_SIZE_X * WIN_SIZE_Y> _depth;
 		int _text_y;

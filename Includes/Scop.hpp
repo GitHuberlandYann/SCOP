@@ -23,6 +23,7 @@ class Scop {
 		std::vector<t_vertex> _vertices_textures;
 		std::vector<t_vertex> _vertices_normals;
 		std::vector<Face *> _faces;
+		std::vector<Face *> _box;
 		Material *_current_used_material;
 
 		void push_face( std::string line, int generated_color );
@@ -47,6 +48,7 @@ class Scop {
 		void display_content( void );
 		void center_object( void );
 		void map_img( Mlx *mlx );
+		void map_box( Mlx *mlx );
 };
 
 

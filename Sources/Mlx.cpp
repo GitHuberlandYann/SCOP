@@ -5,6 +5,7 @@ Mlx::Mlx( Scop *scop ) : _mlx_ptr(NULL), _win_ptr(NULL), _img_ptr(NULL),
 		_key_zoom(0), _key_color(0), _key_fill(0), _key_normal(0), _key_show_normals(0),
 		_key_plane_enable(0), _key_plane(0), _key_plane_side(0),
 		_key_perpective_enable(0), _key_reset(0), _key_shade(0), _key_depth_enable(0),
+		_key_show_box(0), _show_box(false),
 		_scop(scop), _size(5), _offset_x(WIN_SIZE_X / 2), _offset_y(WIN_SIZE_Y / 2),
 		_color_mode(DEFAULT), _shade(S_WHITE), _show_normals(N_FALSE), _fill(false), _use_normal(false),
 		_plane_enable(false), _plane_side(false), _perspective_enable(false), _depth_enable(false),
@@ -251,7 +252,9 @@ void Mlx::key_down( int kcode )
 		_use_normal = !_use_normal;
 	else if (kcode == KEY_B && ++_key_depth_enable == 1)
 		_depth_enable = !_depth_enable;
-	else if (kcode == KEY_N && ++_key_show_normals == 1) {
+	else if (kcode == KEY_U && ++_key_show_box == 1) {
+		_show_box = !_show_box;
+	} else if (kcode == KEY_N && ++_key_show_normals == 1) {
 		++_show_normals;
 		if (_show_normals == N_LAST)
 			_show_normals = N_FALSE;
@@ -271,6 +274,7 @@ void Mlx::key_down( int kcode )
 		_plane_enable = false;
 		_plane_side = false;
 		_perspective_enable = false;
+		_show_box = false;
 		_depth_enable = false;
 		_plane = 0;
 	} else if (kcode == KEY_P && ++_key_perpective_enable == 1)
@@ -305,6 +309,8 @@ void Mlx::key_released( int kcode )
 		_key_fill = 0;
 	else if (kcode == KEY_V)
 		_key_normal = 0;
+	else if (kcode == KEY_U)
+		_key_show_box = 0;
 	else if (kcode == KEY_N)
 		_key_show_normals = 0;
 	else if (kcode == KEY_B)
@@ -354,6 +360,9 @@ void Mlx::draw( void )
 		_depth.fill(DEPTH);
 	}
 	_scop->map_img(this);
+	if (_show_box) {
+		_scop->map_box(this);
+	}
 	// put_pixel(WIN_SIZE_X / 2, WIN_SIZE_Y /2, 0xff0000);
 	mlx_put_image_to_window(_mlx_ptr, _win_ptr, _img_ptr, 0, 0);
 }

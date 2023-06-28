@@ -15,6 +15,7 @@ V           - Hide/Show faces with normals facing away from viewpoint
 B           - Draw faces from furthest to closest (slower, but highly recommended)
 F           - Fill faces with color
 N           - Display vertices' normal vector
+U           - Display box surrounding object
 O           - Reset all settings to original values
 P           - Enable/Disable perspective
 

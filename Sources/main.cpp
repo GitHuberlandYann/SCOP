@@ -40,7 +40,8 @@ int main( int ac, char **av )
 		std::cout << e.what() << std::endl;
 		delete mlx;
 		delete scop;
-		return (1);
+		std::string strwhat = e.what();
+		return (strwhat.compare(0, 22, "[QuitProgramException]"));
 	}
 	delete scop;
 	return (0);
