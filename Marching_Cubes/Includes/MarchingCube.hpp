@@ -7,6 +7,8 @@ class MarchingCube {
 	private:
 		size_t _size[3];
 		int *_array;
+		int *(_carrays[2]);
+		int _block;
 		int _SurfaceValue;
 		int _nb_vertex;
 
@@ -20,6 +22,8 @@ class MarchingCube {
 		void gen_random( void );
 		void gen_small_sphere( void );
 		void gen_Perlin( void );
+		void set_cross_arrays( std::ifstream & indata );
+		void gen_cross_array( void );
 		void display( void );
 		void vMarchingCubes( std::ofstream & outdata );
 

@@ -4,6 +4,7 @@
 # include <iostream>
 # include <random>
 # include <fstream>
+# include <sstream>
 
 typedef struct {
 	double x;
@@ -12,6 +13,7 @@ typedef struct {
 }		t_vertex;
 
 # include "MarchingCube.hpp"
+# include "utils.hpp"
 # include "PerlinNoise.hpp"
 
 #endif

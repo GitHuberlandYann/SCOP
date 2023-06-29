@@ -2,7 +2,7 @@ NAME = march
 OBJS_DIR = Objs
 SRCS_DIR = Sources
 
-FILES = main MarchingCube
+FILES = main MarchingCube utils
 
 SRCS = $(addprefix $(SRCS_DIR)/, $(addsuffix .cpp, $(FILES)))
 
@@ -27,7 +27,7 @@ $(NAME): $(OBJS)
 	$(CC) $(CPPFLAGS) $(SAN) -std=c++17 $(OBJS) -o $(NAME) $(MATH) -lstdc++
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
-	$(CC) $(CPPFLAGS) $(SAN) $(INCLUDES) -std=c++17 -c $< -o $@ -lm -lstdc++
+	$(CC) $(CPPFLAGS) $(SAN) $(INCLUDES) -std=c++17 -c $< -o $@
 
 clean:
 	rm -rf $(OBJS_DIR)

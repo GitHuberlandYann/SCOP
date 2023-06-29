@@ -303,9 +303,11 @@ const double a2dEdgeDirection[12][3] =
         {0.0, 0.0, 1.0},{0.0, 0.0, 1.0},{ 0.0, 0.0, 1.0},{0.0,  0.0, 1.0}
 };
 
-MarchingCube::MarchingCube( void ) : _array(NULL), _SurfaceValue(5), _nb_vertex(0)
+MarchingCube::MarchingCube( void ) : _array(NULL), _SurfaceValue(6), _nb_vertex(0)
 {
 	set_size(3, 3, 3);
+	_carrays[0] = NULL;
+	_carrays[1] = NULL;
 }
 
 MarchingCube::~MarchingCube( void )
@@ -313,18 +315,13 @@ MarchingCube::~MarchingCube( void )
 	if (_array) {
 		delete [] _array;
 	}
+	delete [] _carrays[0];
+	delete [] _carrays[1];
 }
 
 // ************************************************************************** //
-//								  Public									//
+//								  Private                                     //
 // ************************************************************************** //
-
-void custom_swap(double arr[8], int a, int b)
-{
-	double tmp = arr[a];
-	arr[a] = arr[b];
-	arr[b] = tmp;
-}
 
 //vMarchCube performs the Marching Cubes algorithm on a single cube
 void MarchingCube::vMarchCube( int fX, int fY, int fZ, std::ofstream & outdata )
@@ -422,7 +419,7 @@ void MarchingCube::vMarchCube( int fX, int fY, int fZ, std::ofstream & outdata )
 }
 
 // ************************************************************************** //
-//								  Public									//
+//								  Public                                      //
 // ************************************************************************** //
 
 void MarchingCube::set_size( size_t x, size_t y, size_t z )
@@ -474,9 +471,107 @@ void MarchingCube::gen_Perlin( void )
 	for (size_t z = 0; z < _size[2]; z++) {
 		for (size_t y = 0; y < _size[1]; y++) {
 			for (size_t x = 0; x < _size[0]; x++) {
+				// double noise = perlin.octave3D_01((double)x / 10, (double)y / 10, (double)z / 10, 8) * 10.0;
 				double noise = perlin.noise3D_01((double)x / 10, (double)y / 10, (double)z / 10) * 10.0;
 				std::cout << "noise: " << noise;
 				_array[z * _size[1] * _size[0] + y * _size[0] + x] = noise;
+			}
+		}
+	}
+}
+
+void MarchingCube::set_cross_arrays( std::ifstream & indata )
+{
+	std::string line;
+	_block = 0;
+	while (!indata.eof()) {
+		std::getline(indata, line);
+		line = trim_spaces(line);
+		if (line.empty()) {
+			continue ;
+		}
+		std::cout << "current line: " << line << std::endl;
+		if (!line.compare(0, 5, "size ")) {
+			if (_block) {
+				std::cout<<"ERROR\n";return ;//throw
+			}
+			size_t index = 5, ixyz = 0;
+			
+			while (std::isdigit(line[index]))
+			{
+				if (ixyz > 2) {
+					std::cout<<"ERROR\n";
+					return ;//throw
+				}
+				std::istringstream iss(line.substr(index));
+				int toint;
+				iss >> toint;
+				if (iss.fail()) {
+					std::cout<<"ERROR\n"; return ;//throw Webserv::InvalidFileContentException();
+				}
+				_size[ixyz] = toint;
+				while (std::isdigit(line[index]))
+					++index;
+				if (line[index] && line[index] != ' ') {
+					std::cout<<"ERROR\n";return ;//throw Webserv::InvalidFileContentException();
+				}
+				++index;
+				++ixyz;
+			}
+			std::cout << "out size line" << std::endl;
+		} else if (!line.compare(0, 6, "block")) {
+			if (_block > 1) {
+				std::cerr<<"ERROR\n";return ;//throw
+			}
+			_carrays[_block] = new int[_size[_block] * _size[_block + 1]];
+			size_t y = 0;
+			while (!indata.eof()) {
+				if (y == _size[_block + 1]) {
+					break ;
+				}
+				std::getline(indata, line);
+				line = trim_spaces(line);
+				size_t x = 0, index = 0;
+				while (std::isdigit(line[index])) {
+					if (x > _size[_block]) {
+						std::cerr<<"ERROR\n";return ;//throw
+					}
+					std::istringstream iss(line.substr(index));
+					int toint;
+					iss >> toint;
+					if (iss.fail()) {
+						std::cerr<<"ERROR\n";return ;//throw Webserv::InvalidFileContentException();
+					}
+					_carrays[_block][(_size[_block + 1] - 1 - y) * _size[_block] + x] = toint;
+					while (std::isdigit(line[index]))
+						++index;
+					if (line[index] && line[index] != ' ') {
+						std::cout<<"ERROR\n";return ;//throw Webserv::InvalidFileContentException();
+					}
+					++x;
+					++index;
+				}
+				if (x != _size[_block]) {
+					std::cerr<<"ERROR\n";return ;//throw
+				}
+				y++;
+			}
+			std::cout << "out block " << _block << std::endl;
+			++_block;
+		} else {
+			std::cerr<<"ERROR\n";return ;//throw
+		}
+	}
+	std::cout << "out set cross" << std::endl;
+}
+
+void MarchingCube::gen_cross_array( void )
+{
+	_array = new int[_size[0] * _size[1] * _size[2]];
+	for (size_t z = 0; z < _size[2]; z++) {
+		for (size_t y = 0; y < _size[1]; y++) {
+			for (size_t x = 0; x < _size[0]; x++) {
+				_array[z * _size[1] * _size[0] + y * _size[0] + x] = (_carrays[0][y * _size[0] + x] && _carrays[1][y * _size[0] + z]) * 7;
 			}
 		}
 	}
