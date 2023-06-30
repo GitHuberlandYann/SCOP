@@ -7,7 +7,7 @@ class MarchingCube {
 	private:
 		size_t _size[3];
 		int *_array;
-		int *(_carrays[2]);
+		int *(_carrays[3]);
 		int _block;
 		int _SurfaceValue;
 		int _nb_vertex;

@@ -308,6 +308,7 @@ MarchingCube::MarchingCube( void ) : _array(NULL), _SurfaceValue(6), _nb_vertex(
 	set_size(3, 3, 3);
 	_carrays[0] = NULL;
 	_carrays[1] = NULL;
+	_carrays[2] = NULL;
 }
 
 MarchingCube::~MarchingCube( void )
@@ -317,6 +318,7 @@ MarchingCube::~MarchingCube( void )
 	}
 	delete [] _carrays[0];
 	delete [] _carrays[1];
+	delete [] _carrays[2];
 }
 
 // ************************************************************************** //
@@ -431,170 +433,6 @@ void MarchingCube::set_size( size_t x, size_t y, size_t z )
 	_size[0] = x;
 	_size[1] = y;
 	_size[2] = z;
-}
-
-void MarchingCube::gen_random( void )
-{
-	std::default_random_engine generator;
-	std::uniform_int_distribution<int> distribution(0, 10);
-
-	_array = new int[_size[0] * _size[1] * _size[2]];
-	for (size_t z = 0; z < _size[2]; z++) {
-		for (size_t y = 0; y < _size[1]; y++) {
-			for (size_t x = 0; x < _size[0]; x++) {
-				_array[z * _size[1] * _size[0] + y * _size[0] + x] = distribution(generator);
-			}
-		}
-	}
-}
-
-void MarchingCube::gen_small_sphere( void )
-{
-	// set_size(2, 2, 2);
-	set_size(3, 3, 3);
-	_array = new int[_size[0] * _size[1] * _size[2]];
-	for (size_t z = 0; z < _size[2]; z++) {
-		for (size_t y = 0; y < _size[1]; y++) {
-			for (size_t x = 0; x < _size[0]; x++) {
-				_array[z * _size[1] * _size[0] + y * _size[0] + x] = (x == 1 && y == 1 && z == 1) * 7;
-			}
-		}
-	}
-}
-
-void MarchingCube::gen_Perlin( void )
-{
-    const siv::PerlinNoise::seed_type seed = 123456u;
-	const siv::PerlinNoise perlin{ seed };
-
-	_array = new int[_size[0] * _size[1] * _size[2]];
-	for (size_t z = 0; z < _size[2]; z++) {
-		for (size_t y = 0; y < _size[1]; y++) {
-			for (size_t x = 0; x < _size[0]; x++) {
-				// double noise = perlin.octave3D_01((double)x / 10, (double)y / 10, (double)z / 10, 8) * 10.0;
-				double noise = perlin.noise3D_01((double)x / 10, (double)y / 10, (double)z / 10) * 10.0;
-				std::cout << "noise: " << noise;
-				_array[z * _size[1] * _size[0] + y * _size[0] + x] = noise;
-			}
-		}
-	}
-}
-
-void MarchingCube::set_cross_arrays( std::ifstream & indata )
-{
-	std::string line;
-	_block = 0;
-	while (!indata.eof()) {
-		std::getline(indata, line);
-		line = trim_spaces(line);
-		if (line.empty() || line[0] == '#') {
-			continue ;
-		}
-		std::cout << "current line: " << line << std::endl;
-		if (!line.compare(0, 5, "size ")) {
-			std::cout << "in size" << std::endl;
-			if (_block) {
-				std::cout<<"ERROR\n";return ;//throw
-			}
-			size_t index = 5, ixyz = 0;
-			
-			while (std::isdigit(line[index]))
-			{
-				if (ixyz > 2) {
-					std::cout<<"ERROR\n";
-					return ;//throw
-				}
-				std::istringstream iss(line.substr(index));
-				int toint;
-				iss >> toint;
-				if (iss.fail()) {
-					std::cout<<"ERROR\n"; return ;//throw Webserv::InvalidFileContentException();
-				}
-				_size[ixyz] = toint;
-				while (std::isdigit(line[index]))
-					++index;
-				if (line[index] && line[index] != ' ') {
-					std::cout<<"ERROR\n";return ;//throw Webserv::InvalidFileContentException();
-				}
-				++index;
-				++ixyz;
-			}
-			std::cout << "out size line with size " << _size[0] << ", " << _size[1] << ", " << _size[2] << std::endl;
-		} else if (!line.compare(0, 6, "block")) {
-			std::cout << "in block" << std::endl;
-			if (_block > 1) {
-				std::cerr<<"ERROR _block\n";return ;//throw
-			}
-			_carrays[_block] = new int[_size[_block] * _size[_block + 1]];
-			std::cout << "malloc " << _size[_block] << " x " << _size[_block + 1] << std::endl;
-			size_t y = 0;
-			while (!indata.eof()) {
-				if (y == _size[_block + 1]) {
-					break ;
-				}
-				std::getline(indata, line);
-				line = trim_spaces(line);
-				size_t x = 0, index = 0;
-				while (std::isdigit(line[index])) {
-					if (x > _size[_block * 2]) {
-						std::cerr<<"ERROR 0\n";return ;//throw
-					}
-					std::istringstream iss(line.substr(index));
-					int toint;
-					iss >> toint;
-					if (iss.fail()) {
-						std::cerr<<"ERROR 1\n";return ;//throw Webserv::InvalidFileContentException();
-					}
-					_carrays[_block][(_size[1] - 1 - y) * _size[_block * 2] + x] = toint;
-					while (std::isdigit(line[index]))
-						++index;
-					if (line[index] && line[index] != ' ') {
-						std::cout<<"ERROR 2\n";return ;//throw Webserv::InvalidFileContentException();
-					}
-					++x;
-					++index;
-				}
-				if (x != _size[_block * 2]) {
-					std::cerr<<"ERROR 3, x = " << x << ", _size[_bloc] = " << _size[_block * 2] << "\n";return ;//throw
-				}
-				y++;
-			}
-			std::cout << "out block " << _block << std::endl;
-			++_block;
-		} else {
-			std::cout << "in else" << std::endl;
-			std::cerr<<"ERROR else\n";return ;//throw
-		}
-	}
-	std::cout << "out set cross" << std::endl;
-}
-
-void MarchingCube::gen_cross_array( void )
-{
-	_array = new int[_size[0] * _size[1] * _size[2]];
-	for (size_t z = 0; z < _size[2]; z++) {
-		for (size_t y = 0; y < _size[1]; y++) {
-			for (size_t x = 0; x < _size[0]; x++) {
-				// std::cout << x << '/' << _size[0] << ", " << y << '/' << _size[1] << ", " << z << '/' << _size[2] << ": " << _carrays[1][y * _size[2] + z]  << std::endl;
-				_array[z * _size[1] * _size[0] + y * _size[0] + x] = (_carrays[0][y * _size[0] + x] && _carrays[1][y * _size[2] + z]) * 7;
-			}
-		}
-	}
-}
-
-void MarchingCube::display( void )
-{
-	for (size_t z = 0; z < _size[2]; z++) {
-		std::cout << std::endl << " ---- face " << z << " ----" << std::endl;
-		for (size_t y = 0; y < _size[1]; y++) {
-			std::cout << '\t';
-			for (size_t x = 0; x < _size[0]; x++) {
-				std::cout << _array[z * _size[1] * _size[0] + y * _size[0] + x] << ' ';
-			}
-			std::cout << std::endl;
-		}
-	}
-	std::cout << std::endl;
 }
 
 //vMarchingCubes iterates over the entire dataset, calling vMarchCube on each cube

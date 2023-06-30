@@ -5,6 +5,7 @@
 # include <random>
 # include <fstream>
 # include <sstream>
+# include <exception>
 
 typedef struct {
 	double x;

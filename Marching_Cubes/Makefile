@@ -2,7 +2,7 @@ NAME = march
 OBJS_DIR = Objs
 SRCS_DIR = Sources
 
-FILES = main MarchingCube utils
+FILES = main MarchingCube generation utils
 
 SRCS = $(addprefix $(SRCS_DIR)/, $(addsuffix .cpp, $(FILES)))
 

@@ -35,9 +35,15 @@ int main( int ac, char **av )
 			std::cerr << "Error\nCould not open file " << arg2 << std::endl;
 			return (1);
 		}
-		mc.set_cross_arrays(indata);
+		try {
+			mc.set_cross_arrays(indata);
+			mc.gen_cross_array();
+		} catch (std::exception & e) {
+			std::cerr << e.what() << std::endl;
+			indata.close();
+			return (1);
+		}
 		indata.close();
-		mc.gen_cross_array();
 	} else {
 		// mc.gen_random();
 		// mc.gen_small_sphere();
