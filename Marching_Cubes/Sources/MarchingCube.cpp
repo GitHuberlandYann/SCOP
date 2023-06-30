@@ -487,11 +487,12 @@ void MarchingCube::set_cross_arrays( std::ifstream & indata )
 	while (!indata.eof()) {
 		std::getline(indata, line);
 		line = trim_spaces(line);
-		if (line.empty()) {
+		if (line.empty() || line[0] == '#') {
 			continue ;
 		}
 		std::cout << "current line: " << line << std::endl;
 		if (!line.compare(0, 5, "size ")) {
+			std::cout << "in size" << std::endl;
 			if (_block) {
 				std::cout<<"ERROR\n";return ;//throw
 			}
@@ -518,12 +519,14 @@ void MarchingCube::set_cross_arrays( std::ifstream & indata )
 				++index;
 				++ixyz;
 			}
-			std::cout << "out size line" << std::endl;
+			std::cout << "out size line with size " << _size[0] << ", " << _size[1] << ", " << _size[2] << std::endl;
 		} else if (!line.compare(0, 6, "block")) {
+			std::cout << "in block" << std::endl;
 			if (_block > 1) {
-				std::cerr<<"ERROR\n";return ;//throw
+				std::cerr<<"ERROR _block\n";return ;//throw
 			}
 			_carrays[_block] = new int[_size[_block] * _size[_block + 1]];
+			std::cout << "malloc " << _size[_block] << " x " << _size[_block + 1] << std::endl;
 			size_t y = 0;
 			while (!indata.eof()) {
 				if (y == _size[_block + 1]) {
@@ -533,33 +536,34 @@ void MarchingCube::set_cross_arrays( std::ifstream & indata )
 				line = trim_spaces(line);
 				size_t x = 0, index = 0;
 				while (std::isdigit(line[index])) {
-					if (x > _size[_block]) {
-						std::cerr<<"ERROR\n";return ;//throw
+					if (x > _size[_block * 2]) {
+						std::cerr<<"ERROR 0\n";return ;//throw
 					}
 					std::istringstream iss(line.substr(index));
 					int toint;
 					iss >> toint;
 					if (iss.fail()) {
-						std::cerr<<"ERROR\n";return ;//throw Webserv::InvalidFileContentException();
+						std::cerr<<"ERROR 1\n";return ;//throw Webserv::InvalidFileContentException();
 					}
-					_carrays[_block][(_size[_block + 1] - 1 - y) * _size[_block] + x] = toint;
+					_carrays[_block][(_size[1] - 1 - y) * _size[_block * 2] + x] = toint;
 					while (std::isdigit(line[index]))
 						++index;
 					if (line[index] && line[index] != ' ') {
-						std::cout<<"ERROR\n";return ;//throw Webserv::InvalidFileContentException();
+						std::cout<<"ERROR 2\n";return ;//throw Webserv::InvalidFileContentException();
 					}
 					++x;
 					++index;
 				}
-				if (x != _size[_block]) {
-					std::cerr<<"ERROR\n";return ;//throw
+				if (x != _size[_block * 2]) {
+					std::cerr<<"ERROR 3, x = " << x << ", _size[_bloc] = " << _size[_block * 2] << "\n";return ;//throw
 				}
 				y++;
 			}
 			std::cout << "out block " << _block << std::endl;
 			++_block;
 		} else {
-			std::cerr<<"ERROR\n";return ;//throw
+			std::cout << "in else" << std::endl;
+			std::cerr<<"ERROR else\n";return ;//throw
 		}
 	}
 	std::cout << "out set cross" << std::endl;
@@ -571,7 +575,8 @@ void MarchingCube::gen_cross_array( void )
 	for (size_t z = 0; z < _size[2]; z++) {
 		for (size_t y = 0; y < _size[1]; y++) {
 			for (size_t x = 0; x < _size[0]; x++) {
-				_array[z * _size[1] * _size[0] + y * _size[0] + x] = (_carrays[0][y * _size[0] + x] && _carrays[1][y * _size[0] + z]) * 7;
+				// std::cout << x << '/' << _size[0] << ", " << y << '/' << _size[1] << ", " << z << '/' << _size[2] << ": " << _carrays[1][y * _size[2] + z]  << std::endl;
+				_array[z * _size[1] * _size[0] + y * _size[0] + x] = (_carrays[0][y * _size[0] + x] && _carrays[1][y * _size[2] + z]) * 7;
 			}
 		}
 	}
